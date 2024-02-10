@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "phone number required"],
     },
     emailVerifyCode: String,
     emailVerifyExpiers: Date,
@@ -42,7 +41,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-   
+
     address: {
       type: String,
     },
