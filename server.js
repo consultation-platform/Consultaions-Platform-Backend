@@ -1,15 +1,20 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const ApiError = require("./utils/api.error");
+const dotenv = require("dotenv").config();
+
 const globalError = require("./middlewares/error.middleware");
 const dbConnection = require("./configs/db.config");
-const dotenv = require("dotenv").config();
 
 //ROUTES
 const userRoutes = require("./routes/user.routes");
+const consFieldsRoutes = require("./routes/cons.fields.route");
+const authRoutes = require("./routes/auth.routes");
 
 app.use(express.json());
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -17,7 +22,9 @@ if (process.env.NODE_ENV === "development") {
 }
 
 //Mount Routes
+app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/cons-fields", consFieldsRoutes);
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
