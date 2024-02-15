@@ -12,6 +12,7 @@ const dbConnection = require("./configs/db.config");
 const userRoutes = require("./routes/user.routes");
 const consFieldsRoutes = require("./routes/cons.fields.route");
 const authRoutes = require("./routes/auth.routes");
+const contactUsRoutes = require("./routes/contactUs.routes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -25,6 +26,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/cons-fields", consFieldsRoutes);
+app.use("/contactUs", contactUsRoutes);
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
