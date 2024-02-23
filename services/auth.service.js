@@ -8,10 +8,13 @@ const ApiError = require("../utils/api.error");
 const sendEmail = require("../utils/send.email");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
+const Mentor = require("../models/mentor.model");
 
 exports.signup = asyncHandler(async (req, res, next) => {
   const currentUser = await User.findOne({ email: req.body.email });
-  if (currentUser) {
+  const currentMentor = await Mentor.findOne({ email: req.body.email });
+
+  if (currentUser || currentMentor) {
     return next(new ApiError(`sorry this user allready exists`, 401));
   }
   // 1- Create user
@@ -58,11 +61,13 @@ exports.signup = asyncHandler(async (req, res, next) => {
 
 exports.signupMentor = asyncHandler(async (req, res, next) => {
   const currentUser = await User.findOne({ email: req.body.email });
-  if (currentUser) {
+  const currentMentor = await Mentor.findOne({ email: req.body.email });
+
+  if (currentUser || currentMentor) {
     return next(new ApiError(`sorry this user allready exists`, 401));
   }
   // 1- Create user
-  const user = await User.create({
+  const mentor = await Mentor.create({
     fname: req.body.fname,
     lname: req.body.lname,
     email: req.body.email,
@@ -82,15 +87,15 @@ exports.signupMentor = asyncHandler(async (req, res, next) => {
   ).toString();
 
   // Save the verification code and its expiry time in the user model
-  user.emailVerifyCode = crypto
+  mentor.emailVerifyCode = crypto
     .createHash("sha256")
     .update(verificationCode)
     .digest("hex");
-  user.emailVerifyExpiers = Date.now() + 10 * 60 * 1000; // 10 minutes
-  await user.save();
+  mentor.emailVerifyExpiers = Date.now() + 10 * 60 * 1000; // 10 minutes
+  await mentor.save();
 
   // 3- Send the verification code via SMS
-  const message = `Hi ${user.name},
+  const message = `Hi ${mentor.name},
   \n We received a request to reset the password on your Sayees Account.
   \n ${verificationCode} \n Enter this code to complete the reset.
    \n Thanks for helping us keep your account secure.
@@ -98,7 +103,7 @@ exports.signupMentor = asyncHandler(async (req, res, next) => {
 
   try {
     await sendEmail({
-      email: user.email,
+      email: mentor.email,
       subject: "Your password reset code (valid for 10 min)",
       message,
     });
@@ -111,6 +116,8 @@ exports.signupMentor = asyncHandler(async (req, res, next) => {
 });
 
 exports.verifyEmail = asyncHandler(async (req, res, next) => {
+  let token; // Declare token variable here
+
   const hashedResetCode = crypto
     .createHash("sha256")
     .update(req.body.emailVerifyCode)
@@ -120,16 +127,28 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
     emailVerifyCode: hashedResetCode,
     emailVerifyExpiers: { $gt: Date.now() },
   });
+  const mentor = await Mentor.findOne({
+    emailVerifyCode: hashedResetCode,
+    emailVerifyExpiers: { $gt: Date.now() },
+  });
 
-  if (!user) {
+  if (!(user || mentor)) {
     return next(new ApiError("Reset code invalid or expired"));
   }
 
   // 2) Reset code valid
-  user.emailVerified = true;
-  await user.save();
-  // 3) generate token
-  const token = createToken(user._id);
+  if (user) {
+    user.emailVerified = true;
+    await user.save();
+    // 3) generate token
+    token = createToken(user._id);
+  }
+  if (mentor) {
+    mentor.emailVerified = true;
+    await mentor.save();
+    // 3) generate token
+    token = createToken(mentor._id);
+  }
 
   // Save the token in the cookies
   res.cookie("jwt", token, {
@@ -137,7 +156,7 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
     path: "/",
     maxAge: 240 * 60 * 60 * 1000,
     sameSite: "None",
-    secure: (process.env.NODE_ENV = "production"),
+    // secure: (process.env.NODE_ENV = "production"),
   });
 
   res.status(200).json({
@@ -196,31 +215,41 @@ exports.login = asyncHandler(async (req, res, next) => {
   try {
     // 1) Check if email and password are in the request body
     if (!req.body.email || !req.body.password) {
-      return next(new ApiError("email and password are required", 400));
+      return next(new ApiError("Email and password are required", 400));
     }
 
-    // 3) Find user by email number
+    // 3) Find user by email
     const user = await User.findOne({ email: req.body.email });
+    const mentor = await Mentor.findOne({ email: req.body.email });
 
     // 4) Check if the user exists
-    if (!user) {
+    if (!(user || mentor)) {
       return next(new ApiError("User not found", 404));
     }
 
     // 5) Check if the user is email verified
-    if (user.emailVerified === false) {
+    if ((user && !user.emailVerified) || (mentor && !mentor.emailVerified)) {
       return next(new ApiError("Please verify your email first", 401));
     }
 
-    // 6) Check if the password is correct
-    if (!(await bcrypt.compare(req.body.password, user.password))) {
+    // 6) Check if it's a mentor and if the account is accepted
+    if (mentor && !mentor.accepted) {
+      return next(new ApiError("Your account has not been accepted yet", 401));
+    }
+
+    // 7) Check if the password is correct
+    const isValidPassword = user
+      ? await bcrypt.compare(req.body.password, user.password)
+      : await bcrypt.compare(req.body.password, mentor.password);
+
+    if (!isValidPassword) {
       return next(new ApiError("Incorrect password", 401));
     }
 
-    // 7) Generate token
-    const token = createToken(user._id);
+    // 8) Generate token
+    const token = createToken(user ? user._id : mentor._id);
 
-    // 8) Save the token in the cookies
+    // 9) Save the token in the cookies
     res.cookie("jwt", token, {
       httpOnly: true,
       path: "/",
@@ -229,11 +258,18 @@ exports.login = asyncHandler(async (req, res, next) => {
       // secure: (process.env.NODE_ENV = "production"),
     });
 
-    // 9) Extract specific properties from the user object
-    const { _id, name, email, role } = user;
+    // 10) Extract specific properties from the user object
+    const userData = user
+      ? { _id: user._id, name: user.name, email: user.email, role: user.role }
+      : {
+          _id: mentor._id,
+          name: mentor.name,
+          email: mentor.email,
+          role: mentor.role,
+        };
 
-    // 10) Send response to the client with specific properties
-    res.status(200).json({ data: { _id, name, email, role }, token: token });
+    // 11) Send response to the client with specific properties
+    res.status(200).json({ data: userData, token });
   } catch (error) {
     // Handle unexpected errors
     console.error(error);

@@ -16,10 +16,11 @@ exports.createOne = (Model) =>
     }
   });
 
-  exports.deleteOne = (Model) =>
+exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     try {
-      const document = await Model.findByIdAndDelete(req.params.id);
+      const filter = { _id: req.params.id }; // Modify this filter based on your requirements
+      const document = await Model.findOneAndDelete(filter);
       if (!document)
         return next(
           new ApiError(
@@ -34,7 +35,6 @@ exports.createOne = (Model) =>
       );
     }
   });
-
 
 exports.updateOne = (Model) =>
   asyncHandler(async (req, res, next) => {

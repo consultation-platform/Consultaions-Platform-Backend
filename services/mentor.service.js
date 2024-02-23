@@ -1,66 +1,66 @@
 const Mentor = require("../models/mentor.model");
-const factory = require("./handlers.factory");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
 
 exports.unActivateMentor = asyncHandler(async (req, res, next) => {
-  const document = await Mentor.findByIdAndUpdate(
+  const mentor = await Mentor.findByIdAndUpdate(
     req.params.id,
-    {
-      active: false,
-    },
-    {
-      new: true,
-    }
+    { active: false },
+    { new: true }
   );
 
-  if (!document) {
-    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  if (!mentor) {
+    return next(new ApiError(`No mentor found for ID ${req.params.id}`, 404));
   }
-  res.status(201).json({ data: document });
+  res.status(200).json({ data: mentor });
 });
+
 exports.acceptmentor = asyncHandler(async (req, res, next) => {
-  const document = await Mentor.findByIdAndUpdate(
+  const mentor = await Mentor.findByIdAndUpdate(
     req.params.id,
-    {
-      active: false,
-    },
-    {
-      accepted: true,
-    }
+    { accepted: true },
+    { new: true }
   );
 
-  if (!document) {
-    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  if (!mentor) {
+    return next(new ApiError(`No mentor found for ID ${req.params.id}`, 404));
   }
-  res.status(201).json({ data: document });
+  res.status(200).json({ data: mentor });
 });
-exports.getMentorById = factory.getOne(Mentor);
+
+exports.getMentorById = asyncHandler(async (req, res, next) => {
+  const mentor = await Mentor.findById(req.params.id);
+
+  if (!mentor) {
+    return next(new ApiError(`No mentor found for ID ${req.params.id}`, 404));
+  }
+  res.status(200).json({ data: mentor });
+});
 
 exports.getAllActiveMentors = asyncHandler(async (req, res, next) => {
-  const document = await Mentor.find({ accepted: true });
-  if (!document) next(new ApiError(`Error Happend `, 404));
-  if (document.length === 0) {
-    res.status(201).json({ message: "There Is NO Data To Retrive" });
-  } else {
-    res.status(200).json({
-      message: "Documents retrieved successfully",
-      length: document.length,
-      document,
-    });
+  const mentors = await Mentor.find({ accepted: true });
+
+  if (mentors.length === 0) {
+    return res.status(404).json({ message: "No active mentors found." });
   }
+
+  res.status(200).json({
+    message: "Active mentors retrieved successfully",
+    length: mentors.length,
+    data: mentors,
+  });
 });
 
 exports.getAllNotActiveMentors = asyncHandler(async (req, res, next) => {
-  const document = await Mentor.find({ accepted: false });
-  if (!document) next(new ApiError(`Error Happend `, 404));
-  if (document.length === 0) {
-    res.status(201).json({ message: "There Is NO Data To Retrive" });
-  } else {
-    res.status(200).json({
-      message: "Documents retrieved successfully",
-      length: document.length,
-      document,
-    });
+  const mentors = await Mentor.find({ accepted: false });
+
+  if (mentors.length === 0) {
+    return res.status(404).json({ message: "No not active mentors found." });
   }
+
+  res.status(200).json({
+    message: "Not active mentors retrieved successfully",
+    length: mentors.length,
+    data: mentors,
+  });
 });

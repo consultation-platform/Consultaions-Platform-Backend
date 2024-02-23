@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   signup,
+  signupMentor,
   login,
   verifyEmail,
   forgotPassword,
@@ -20,7 +21,7 @@ const {
 
 router.post("/login", login);
 router.post("/signup", signup);
-router.post("/signup-mentor", signup);
+router.post("/signup-mentor", signupMentor);
 router.post("/verify-email", verifyEmail);
 router.post("/resend-code", resendVerificationCode);
 router.post("/forgot-password", forgotPassword);
