@@ -203,6 +203,7 @@ exports.login = asyncHandler(async (req, res, next) => {
       return next(new ApiError("User not found", 404));
     }
 
+
     // 5) Check if the user is email verified
     if (user.emailVerified === false) {
       return next(new ApiError("Please verify your email first", 401));
