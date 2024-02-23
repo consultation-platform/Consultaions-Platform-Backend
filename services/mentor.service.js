@@ -5,7 +5,7 @@ const ApiError = require("../utils/api.error");
 exports.unActivateMentor = asyncHandler(async (req, res, next) => {
   const mentor = await Mentor.findByIdAndUpdate(
     req.params.id,
-    { active: false },
+    { accepted: false },
     { new: true }
   );
 
