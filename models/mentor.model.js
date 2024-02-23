@@ -21,6 +21,10 @@ const mentorSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    birthdate:{
+      type:Date,
+    },
+
     emailVerifyCode: String,
     emailVerifyExpiers: Date,
     emailVerified: {
@@ -54,6 +58,15 @@ const mentorSchema = new mongoose.Schema(
     address: {
       type: String,
     },
+    socialMedia: {
+      facebook: String,
+      twitter: String,
+      linkedin: String,
+      instagram: String,
+    },
+    image:String,
+    desciption: String,
+    field: String,
   },
   { timestamps: true }
 );

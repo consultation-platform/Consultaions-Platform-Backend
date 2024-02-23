@@ -2,7 +2,7 @@ const slugify = require("slugify");
 const bcrypt = require("bcryptjs");
 const { check, body } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validator");
-const User = require("../../models/userModel");
+const User = require("../../models/user.model");
 
 exports.checkMongoID = [
   check("id").isMongoId().withMessage("Invalid User id format"),

@@ -9,10 +9,6 @@ const sendEmail = require("../utils/send.email");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 
-// @desc    Signup with email Verification
-// @route   POST /api/auth/signup
-// @access  Public
-
 exports.signup = asyncHandler(async (req, res, next) => {
   const currentUser = await User.findOne({ email: req.body.email });
   if (currentUser) {
@@ -24,6 +20,56 @@ exports.signup = asyncHandler(async (req, res, next) => {
     lname: req.body.lname,
     email: req.body.email,
     password: req.body.password,
+  });
+
+  // 2- Generate and send verification code to the user's email
+  const verificationCode = Math.floor(
+    100000 + Math.random() * 900000
+  ).toString();
+
+  // Save the verification code and its expiry time in the user model
+  user.emailVerifyCode = crypto
+    .createHash("sha256")
+    .update(verificationCode)
+    .digest("hex");
+  user.emailVerifyExpiers = Date.now() + 10 * 60 * 1000; // 10 minutes
+  await user.save();
+
+  // 3- Send the verification code via SMS
+  const message = `Hi ${user.name},
+  \n We received a request to reset the password on your Sayees Account.
+  \n ${verificationCode} \n Enter this code to complete the reset.
+   \n Thanks for helping us keep your account secure.
+   \n The E-shop Team`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Your password reset code (valid for 10 min)",
+      message,
+    });
+  } catch (err) {
+    console.error(err);
+    return next(new ApiError("Error sending verification code", 500));
+  }
+
+  res.status(200).json({ message: "Verification code sent to your email" });
+});
+
+exports.signupMentor = asyncHandler(async (req, res, next) => {
+  const currentUser = await User.findOne({ email: req.body.email });
+  if (currentUser) {
+    return next(new ApiError(`sorry this user allready exists`, 401));
+  }
+  // 1- Create user
+  const user = await User.create({
+    fname: req.body.fname,
+    lname: req.body.lname,
+    email: req.body.email,
+    password: req.body.password,
+    socialMedia: req.body.socialMedia,
+    field: req.body.field,
+    description: req.body.description,
   });
 
   // 2- Generate and send verification code to the user's email
@@ -176,7 +222,7 @@ exports.login = asyncHandler(async (req, res, next) => {
       path: "/",
       maxAge: 240 * 60 * 60 * 1000,
       sameSite: "None",
-      secure: (process.env.NODE_ENV = "production"),
+      // secure: (process.env.NODE_ENV = "production"),
     });
 
     // 9) Extract specific properties from the user object
@@ -194,7 +240,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @desc   make sure the user is logged in
 exports.protect = asyncHandler(async (req, res, next) => {
   // 1) Check if token exists in cookies
-  const token = req.cookie.jwt;
+  const token = req.cookies.jwt;
 
   if (!token) {
     return next(

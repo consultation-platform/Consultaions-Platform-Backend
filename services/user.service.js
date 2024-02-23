@@ -1,7 +1,12 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
-const ApiError = require("../utils/apiError");
-const createToken = require("../utils/createToken");
+const ApiError = require("../utils/api.error");
+const createToken = require("../utils/create.token");
+const User = require("../models/user.model");
+
+const { uploadSingleImage } = require("../middlewares/uploadImages");
+
+exports.uploadPlaylistImage = uploadSingleImage("image");
 
 // @desc    Get list of users
 // @route   GET /api/users
@@ -31,34 +36,26 @@ exports.getUser = asyncHandler(async (req, res, next) => {
     );
   // Extract specific properties from the user object
   const {
+    fname,
+    lname,
+    birthdate,
     _id,
-    name,
-    planStartDate,
-    planEndDate,
     email,
-    plan,
     active,
     role,
-    phone,
-    freeOnlineConsultations,
-    freeOflineConsultations,
   } = user;
 
   // 4) send response to the client side with specific properties
   res.status(200).json({
     message: "user  retrieved successfully",
     data: {
+      fname,
+      lname,
+      birthdate,
       _id,
-      name,
       email,
-      planStartDate,
-      planEndDate,
-      plan,
       active,
       role,
-      phone,
-      freeOnlineConsultations,
-      freeOflineConsultations,
     },
   });
 });

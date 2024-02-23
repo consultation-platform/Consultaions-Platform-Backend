@@ -20,6 +20,7 @@ const {
 
 router.post("/login", login);
 router.post("/signup", signup);
+router.post("/signup-mentor", signup);
 router.post("/verify-email", verifyEmail);
 router.post("/resend-code", resendVerificationCode);
 router.post("/forgot-password", forgotPassword);
