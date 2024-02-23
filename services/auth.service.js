@@ -70,6 +70,10 @@ exports.signupMentor = asyncHandler(async (req, res, next) => {
     socialMedia: req.body.socialMedia,
     field: req.body.field,
     description: req.body.description,
+    image: req.body.image,
+    phone: req.body.phone,
+    birthdate: req.body.birthdate,
+    address: req.body.address,
   });
 
   // 2- Generate and send verification code to the user's email
@@ -202,7 +206,6 @@ exports.login = asyncHandler(async (req, res, next) => {
     if (!user) {
       return next(new ApiError("User not found", 404));
     }
-
 
     // 5) Check if the user is email verified
     if (user.emailVerified === false) {
