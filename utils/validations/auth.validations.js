@@ -4,11 +4,20 @@ const validatorMiddleware = require("../../middlewares/validator");
 const User = require("../../models/user.model");
 
 exports.signupValidator = [
-  check("name")
+  check("fname")
     .notEmpty()
     .withMessage("User required")
     .isLength({ min: 3 })
-    .withMessage("Too short User name")
+    .withMessage("First Name Too short ")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
+  check("lname")
+    .notEmpty()
+    .withMessage("User required")
+    .isLength({ min: 3 })
+    .withMessage("Last Name Too short ")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -49,8 +58,7 @@ exports.loginValidator = [
     .notEmpty()
     .withMessage("phone number required")
     .isMobilePhone()
-    .withMessage("Invalid mobile phone number")
-   ,
+    .withMessage("Invalid mobile phone number"),
   check("password")
     .notEmpty()
     .withMessage("Password required")

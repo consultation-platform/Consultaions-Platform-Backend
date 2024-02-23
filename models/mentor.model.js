@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema(
+const mentorSchema = new mongoose.Schema(
   {
     fname: {
       type: String,
@@ -41,13 +41,16 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["user", "mentor", "manager"],
-      default: "user",
+      default: "mentor",
     },
     active: {
       type: Boolean,
       default: false,
     },
-
+    accepted: {
+      type: Boolean,
+      default: false,
+    },
     address: {
       type: String,
     },
@@ -55,13 +58,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
+mentorSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  // Hashing user password
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const Mentor = mongoose.model("Mentor", mentorSchema);
 
-module.exports = User;
+module.exports = Mentor;

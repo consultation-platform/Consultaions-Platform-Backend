@@ -20,10 +20,10 @@ exports.signup = asyncHandler(async (req, res, next) => {
   }
   // 1- Create user
   const user = await User.create({
-    name: req.body.name,
+    fname: req.body.fname,
+    lname: req.body.lname,
     email: req.body.email,
     password: req.body.password,
-    email: req.body.email,
   });
 
   // 2- Generate and send verification code to the user's email
