@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
-const sendEmail = require("../utils/send.email");
+const sendEmail = require("../utils/sendEmail");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 

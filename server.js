@@ -23,10 +23,10 @@ if (process.env.NODE_ENV === "development") {
 }
 
 //Mount Routes
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/cons-fields", consFieldsRoutes);
-app.use("/contactUs", contactUsRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/cons-fields", consFieldsRoutes);
+app.use("/api/contactUs", contactUsRoutes);
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });

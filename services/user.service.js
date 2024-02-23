@@ -19,6 +19,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
 // @desc    Get specific user by id
 // @route   GET /api/users/:id
 // @access  Private/Admin
@@ -92,10 +93,6 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
   req.params.id = req.user._id;
   next();
 });
-
-// @desc    Get Logged user data
-// @route   GET /api/users/getMe
-// @access  Private/Protect
 
 // @desc    Update logged user password
 // @route   PUT /api/users/updateMyPassword

@@ -5,7 +5,7 @@ exports.createContactForm = factory.createOne(ContactForm);
 
 exports.deleteContactForm = factory.deleteOne(ContactForm);
 
-exports.getContactFormById = factory.getById(ContactForm);
+exports.getContactFormById = factory.getOne(ContactForm);
 
 exports.getAllContactForms = factory.getAll(ContactForm);
 

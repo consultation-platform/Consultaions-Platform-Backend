@@ -16,7 +16,7 @@ const {
   FormIdValidation,
 } = require("../utils/validations/contactUs.validations");
 
-const { allowedTo, protect } = require("../services/authService");
+const { allowedTo, protect } = require("../services/auth.service");
 
 // Create contactForm
 router.post("/", contactFormValidation, createContactForm);
