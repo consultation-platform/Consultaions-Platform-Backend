@@ -23,10 +23,10 @@ router.post("/", contactFormValidation, createContactForm);
 
 // router.use(protect);
 //  Read contactForms
-router.get("/", allowedTo("manager"), getAllContactForms);
+router.get("/", getAllContactForms);
 
 //  Get contactForm by id
-router.get("/:id", allowedTo("manager"), FormIdValidation, getContactFormById);
+router.get("/:id", FormIdValidation, getContactFormById);
 
 //  Delete contactForm
 router.delete(
