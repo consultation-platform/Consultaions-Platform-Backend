@@ -71,7 +71,7 @@ exports.getAll = (Model) =>
     const document = await Model.find();
     if (!document) next(new ApiError(`Error Happend `, 404));
     if (document.length === 0) {
-      res.status(201).json({ message: "There Is NO Data To Retrive" });
+      res.status(200).json({ message: "There Is NO Data To Retrive" });
     } else {
       res.status(200).json({
         message: "Documents retrieved successfully",
@@ -85,5 +85,5 @@ exports.deleteAll = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.deleteMany({}, { new: true });
     if (!document) return next(new ApiError(`Error Happend `, 404));
-    res.status(201).json({ message: " deleted successfully", document });
+    res.status(200).json({ message: " deleted successfully", document });
   });
