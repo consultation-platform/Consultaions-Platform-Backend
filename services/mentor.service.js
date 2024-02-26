@@ -64,3 +64,82 @@ exports.getAllNotActiveMentors = asyncHandler(async (req, res, next) => {
     data: mentors,
   });
 });
+
+exports.getMentorsByField = async (req, res, next) => {
+  try {
+    // Extract the field value from the query parameters
+    const field = req.query.field;
+
+    // Check if the field parameter is provided
+    if (!field) {
+      return res.status(400).json({ message: "Field parameter is required" });
+    }
+
+    // Find mentors by the provided field
+    const mentors = await Mentor.find({ field });
+
+    if (!mentors || mentors.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No mentors found for field '${field}'` });
+    }
+
+    res.status(200).json({ mentors });
+  } catch (error) {
+    console.error("Error retrieving mentors by field:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.getMentorsBySemester = async (req, res, next) => {
+  try {
+    // Extract the semester value from the query parameters
+    const semester = req.query.semester;
+
+    // Check if the semester parameter is provided
+    if (!semester) {
+      return res
+        .status(400)
+        .json({ message: "Semester parameter is required" });
+    }
+
+    // Define the start and end dates for the semester (assuming a standard academic year)
+    let startDate, endDate;
+
+    if (semester === "fall") {
+      startDate = new Date(`${new Date().getFullYear()}-09-01`);
+      endDate = new Date(`${new Date().getFullYear()}-12-31`);
+    } else if (semester === "spring") {
+      startDate = new Date(`${new Date().getFullYear()}-01-01`);
+      endDate = new Date(`${new Date().getFullYear()}-05-31`);
+    } else if (semester === "summer") {
+      startDate = new Date(`${new Date().getFullYear()}-06-01`);
+      endDate = new Date(`${new Date().getFullYear()}-08-31`);
+    } else if (semester === "winter") {
+      startDate = new Date(`${new Date().getFullYear()}-01-01`);
+      endDate = new Date(`${new Date().getFullYear()}-02-28`);
+    } else {
+      return res.status(400).json({ message: "Invalid semester parameter" });
+    }
+
+    // Find mentors and calculate the semester dynamically based on birthdate
+    const mentors = await Mentor.find().lean();
+
+    // Filter mentors based on birthdate semester
+    const mentorsInSemester = mentors.filter((mentor) => {
+      const birthdate = new Date(mentor.birthdate);
+      return birthdate >= startDate && birthdate <= endDate;
+    });
+
+    if (!mentorsInSemester || mentorsInSemester.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No mentors found for semester '${semester}'` });
+    }
+
+    res.status(200).json({ mentors: mentorsInSemester });
+  } catch (error) {
+    console.error("Error retrieving mentors by semester:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
