@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/cons-fields", consFieldsRoutes);
-app.use("/api/contactUs", contactUsRoutes);
+app.use("/api/contact", contactUsRoutes);
 app.use("/api/mentors", mentorsRoutes);
 app.use("/api/honor-board", honorBoardRoutes);
 app.all("*", (req, res, next) => {
