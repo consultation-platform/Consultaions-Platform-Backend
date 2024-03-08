@@ -41,8 +41,12 @@ app.use(globalError);
 dbConnection();
 app.use(
   cors({
-    credentials: false,
-    origin: ["http://localhost:5173","https://booking21102001.netlify.app/", "*"],
+    credentials: true,
+    origin: [
+      "http://localhost:5173",
+      "https://booking21102001.netlify.app/",
+      "*",
+    ],
   })
 );
 const PORT = process.env.PORT || 8000;
