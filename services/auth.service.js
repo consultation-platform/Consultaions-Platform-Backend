@@ -116,8 +116,7 @@ exports.signupMentor = asyncHandler(async (req, res, next) => {
 });
 
 exports.verifyEmail = asyncHandler(async (req, res, next) => {
-  let token; // Declare token variable here
-
+  let token;
   const hashedResetCode = crypto
     .createHash("sha256")
     .update(req.body.emailVerifyCode)
@@ -127,13 +126,19 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
     emailVerifyCode: hashedResetCode,
     emailVerifyExpiers: { $gt: Date.now() },
   });
-  const mentor = await Mentor.findOne({
-    emailVerifyCode: hashedResetCode,
-    emailVerifyExpiers: { $gt: Date.now() },
-  });
-
-  if (!(user || mentor)) {
-    return next(new ApiError("Reset code invalid or expired"));
+  if (!user) {
+    const mentor = await Mentor.findOne({
+      emailVerifyCode: hashedResetCode,
+      emailVerifyExpiers: { $gt: Date.now() },
+    });
+    if (!mentor) {
+      return next(new ApiError("Reset code invalid or expired"));
+    } else {
+      mentor.emailVerified = true;
+      await mentor.save();
+      // 3) generate token
+      token = createToken(mentor._id);
+    }
   }
 
   // 2) Reset code valid
@@ -142,12 +147,6 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
     await user.save();
     // 3) generate token
     token = createToken(user._id);
-  }
-  if (mentor) {
-    mentor.emailVerified = true;
-    await mentor.save();
-    // 3) generate token
-    token = createToken(mentor._id);
   }
 
   // Save the token in the cookies
@@ -167,42 +166,74 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 exports.resendVerificationCode = asyncHandler(async (req, res, next) => {
   // 2) Find user by email
   const user = await User.findOne({ email: req.body.email });
-  if (!user) {
+  const mentor = await Mentor.findOne({ email: req.body.email });
+  if (!user && !mentor) {
     return next(new ApiError("User not found", 404));
   }
-
-  // 3) Check if the user's email is already verified
-  if (user.emailVerified) {
-    return next(new ApiError("User email is already verified", 400));
-  }
-
   // 4) Generate and send a new verification code
   const verificationCode = Math.floor(
     100000 + Math.random() * 900000
   ).toString();
 
-  // Save the new verification code and its expiry time in the user model
-  user.emailVerifyCode = crypto
-    .createHash("sha256")
-    .update(verificationCode)
-    .digest("hex");
-  user.emailVerifyExpiers = Date.now() + 10 * 60 * 1000; // 10 minutes
-  await user.save();
+  // 3) Check if the user's email is already verified
+  if (user) {
+    if (user.emailVerified) {
+      return next(new ApiError("User email is already verified", 400));
+    }
 
-  // 5) Send the new verification code via SMS
-  const message = `Hi ${user.name},
+    // Save the new verification code and its expiry time in the user model
+    user.emailVerifyCode = crypto
+      .createHash("sha256")
+      .update(verificationCode)
+      .digest("hex");
+    user.emailVerifyExpiers = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    // 5) Send the new verification code via SMS
+    const message = `Hi ${user.name},
     \n your new verification code is
     \n ${verificationCode}`;
 
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your Email Verify code (valid for 10 min)",
-      message,
-    });
-  } catch (err) {
-    console.error(err);
-    return next(new ApiError("Error sending verification code", 500));
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Your Email Verify code (valid for 10 min)",
+        message,
+      });
+    } catch (err) {
+      console.error(err);
+      return next(new ApiError("Error sending verification code", 500));
+    }
+  }
+
+  if (mentor) {
+    if (mentor.emailVerified) {
+      return next(new ApiError("mentor email is already verified", 400));
+    }
+
+    // Save the new verification code and its expiry time in the mentor model
+    mentor.emailVerifyCode = crypto
+      .createHash("sha256")
+      .update(verificationCode)
+      .digest("hex");
+    mentor.emailVerifyExpiers = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await mentor.save();
+
+    // 5) Send the new verification code via SMS
+    const message = `Hi ${mentor.name},
+    \n your new verification code is
+    \n ${verificationCode}`;
+
+    try {
+      await sendEmail({
+        email: mentor.email,
+        subject: "Your Email Verify code (valid for 10 min)",
+        message,
+      });
+    } catch (err) {
+      console.error(err);
+      return next(new ApiError("Error sending verification code", 500));
+    }
   }
 
   res.status(200).json({ message: "New verification code sent to your email" });
@@ -221,9 +252,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     // 3) Find user by email
     const user = await User.findOne({ email: req.body.email });
     const mentor = await Mentor.findOne({ email: req.body.email });
-
-    // 4) Check if the user exists
-    if (!(user || mentor)) {
+    console.log(user, mentor);
+    if (!user && !mentor) {
       return next(new ApiError("User not found", 404));
     }
 
@@ -296,7 +326,8 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   // 3) Check if user exists
   const currentUser = await User.findById(decoded.userId);
-  if (!currentUser) {
+  const currentMentor = await Mentor.findById(decoded.userId);
+  if (!currentUser || !currentMentor) {
     return next(
       new ApiError(
         "The user that belong to this token does no longer exist",
@@ -306,24 +337,45 @@ exports.protect = asyncHandler(async (req, res, next) => {
   }
 
   // 4) Check if user change his password after token created
-  if (currentUser.passwordChangedAt) {
-    const passChangedTimestamp = parseInt(
-      currentUser.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    // Password changed after token created (Error)
-    if (passChangedTimestamp > decoded.iat) {
-      return next(
-        new ApiError(
-          "User recently changed his password. please login again..",
-          401
-        )
+  if (currentUser) {
+    if (currentUser.passwordChangedAt) {
+      const passChangedTimestamp = parseInt(
+        currentUser.passwordChangedAt.getTime() / 1000,
+        10
       );
+      // Password changed after token created (Error)
+      if (passChangedTimestamp > decoded.iat) {
+        return next(
+          new ApiError(
+            "User recently changed his password. please login again..",
+            401
+          )
+        );
+      }
     }
+    req.user = currentUser;
+    next();
   }
 
-  req.user = currentUser;
-  next();
+  if (currentMentor) {
+    if (currentMentor.passwordChangedAt) {
+      const passChangedTimestamp = parseInt(
+        currentMentor.passwordChangedAt.getTime() / 1000,
+        10
+      );
+      // Password changed after token created (Error)
+      if (passChangedTimestamp > decoded.iat) {
+        return next(
+          new ApiError(
+            "User recently changed his password. please login again..",
+            401
+          )
+        );
+      }
+    }
+    req.user = currentMentor;
+    next();
+  }
 });
 
 // @desc    Authorization (User Permissions)
@@ -344,36 +396,45 @@ exports.allowedTo = (...roles) =>
 // @route   POST /api/auth/forgotPassword
 // @access  Public
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
-  // 1) Get user by email
-  const user = await User.findOne({ email: req.body.email });
+  let user;
+  let isUser = true;
+
+  // Check if the email belongs to a user
+  user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    // If not, check if it belongs to a mentor
+    user = await Mentor.findOne({ email: req.body.email });
+    isUser = false;
+  }
+
   if (!user) {
     return next(
       new ApiError(
-        `There is no user with this email number ${req.body.email}`,
+        `There is no account associated with the email ${req.body.email}`,
         404
       )
     );
   }
 
-  // 2) Generate hash reset random 6 digits and save it in db
+  // Generate a random 6-digit reset code
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Hash the reset code
   const hashedResetCode = crypto
     .createHash("sha256")
     .update(resetCode)
     .digest("hex");
 
-  // Save hashed password reset code into db
+  // Save the hashed reset code and its expiry time in the user model
   user.passwordResetCode = hashedResetCode;
-  // Add expiration time for password reset code (10 min)
-  user.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-  user.passwordResetVerified = false;
+  user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   await user.save();
 
-  //  3) Send the reset code via email
+  // Send the reset code via email
   const message = `Hi ${user.name},
-    \n Your password resete code is . 
-   \n ${resetCode} `;
+    \n Your password reset code is: 
+    \n ${resetCode} \n`;
 
   try {
     await sendEmail({
@@ -382,18 +443,18 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
       message,
     });
   } catch (err) {
+    // If there's an error sending the email, clean up the user's reset data
     user.passwordResetCode = undefined;
     user.passwordResetExpires = undefined;
-    user.passwordResetVerified = undefined;
-
-    console.log(err);
     await user.save();
-    return next(new ApiError("There is an error in sending Resete Code ", 500));
+    console.error(err);
+    return next(new ApiError("Error sending password reset code", 500));
   }
 
+  // Respond with a success message
   res
     .status(200)
-    .json({ status: "Success", message: "Reset code sent to your email " });
+    .json({ status: "Success", message: "Reset code sent to your email" });
 });
 
 // @desc    Verify password reset code
@@ -401,15 +462,29 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 // @access  Public
 exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
   // 1) Get user based on reset code
+  let user;
+  let isUser = true;
+
+  // Hash the reset code
   const hashedResetCode = crypto
     .createHash("sha256")
     .update(req.body.resetCode)
     .digest("hex");
 
-  const user = await User.findOne({
+  // Check if the reset code belongs to a user
+  user = await User.findOne({
     passwordResetCode: hashedResetCode,
     passwordResetExpires: { $gt: Date.now() },
   });
+  if (!user) {
+    // If not, check if it belongs to a mentor
+    user = await Mentor.findOne({
+      passwordResetCode: hashedResetCode,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+    isUser = false;
+  }
+
   if (!user) {
     return next(new ApiError("Reset code invalid or expired"));
   }
@@ -427,9 +502,9 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
     path: "/",
     maxAge: 240 * 60 * 60 * 1000,
     sameSite: "None",
-
-    secure: (process.env.NODE_ENV = "production"),
+    secure: process.env.NODE_ENV === "production",
   });
+
   res.status(200).json({
     status: "Success",
   });
@@ -444,7 +519,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   if (!token) {
     return next(
       new ApiError(
-        "You are not login, Please login to get access this route",
+        "You are not logged in. Please log in to access this route",
         401
       )
     );
@@ -452,38 +527,47 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   // 2) Verify token (no change happens, expired token)
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  console.log(decoded.userId);
+
   // 3) Check if user exists
-  const user = await User.findById(decoded.userId);
+  let user;
+  let isUser = true;
+
+  // Check if the user exists
+  user = await User.findById(decoded.userId);
+  if (!user) {
+    // If not, check if it's a mentor
+    user = await Mentor.findById(decoded.userId);
+    isUser = false;
+  }
+
   if (!user) {
     return next(
-      new ApiError(
-        "The user that belong to this token does no longer exist",
-        401
-      )
+      new ApiError("The user associated with this token no longer exists", 401)
     );
   }
 
-  // 2) Check if reset code verified
+  // 4) Check if reset code verified
   if (!user.passwordResetVerified) {
     return next(new ApiError("Reset code not verified", 400));
   }
 
+  // Update password
   user.password = req.body.password;
 
+  // Clear password reset fields
   user.passwordResetCode = undefined;
   user.passwordResetExpires = undefined;
   user.passwordResetVerified = undefined;
 
   await user.save();
 
-  // 3) if everything is ok, generate token
+  // 5) Generate a new token
   token = createToken(user._id);
 
   // Extract specific properties from the user object
   const { _id, name, email, role } = user;
 
-  // 4) send response to the client side with specific properties
+  // 6) Send response to the client with specific properties
   res.status(200).json({ data: { _id, name, email, role }, token: token });
 });
 

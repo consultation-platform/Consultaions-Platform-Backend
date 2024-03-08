@@ -37,7 +37,11 @@ router.delete(
 );
 
 // Detele All contactForms
-router.delete("/", allowedTo("manager"), deleteAllContactForms);
+router.delete(
+  "/",
+  // allowedTo("manager"),
+  deleteAllContactForms
+);
 
 // module.exports = router;
 module.exports = router;
