@@ -31,7 +31,7 @@ router.get("/:id", FormIdValidation, getContactFormById);
 //  Delete contactForm
 router.delete(
   "/:id",
-  allowedTo("manager"),
+  // allowedTo("manager"),
   FormIdValidation,
   deleteContactForm
 );

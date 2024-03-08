@@ -5,6 +5,7 @@ const {
   getUser,
   getLoggedUserData,
   updateLoggedUserData,
+  getUsers,
 } = require("../services/user.service");
 
 const {
@@ -13,7 +14,8 @@ const {
 const { allowedTo, protect } = require("../services/auth.service");
 router.use(protect);
 
-router.get("/me", getLoggedUserData, getUser);
+router.get("/", getUsers);
+router.get("/me", getLoggedUserData);
 router.put("/updateMe", updateLoggedUserValidator, updateLoggedUserData);
 
 module.exports = router;

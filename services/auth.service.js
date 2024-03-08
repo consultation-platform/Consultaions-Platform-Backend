@@ -155,7 +155,7 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
     path: "/",
     maxAge: 240 * 60 * 60 * 1000,
     sameSite: "None",
-    // secure: (process.env.NODE_ENV = "production"),
+    secure: (process.env.NODE_ENV = "production"),
   });
 
   res.status(200).json({
@@ -285,7 +285,7 @@ exports.login = asyncHandler(async (req, res, next) => {
       path: "/",
       maxAge: 240 * 60 * 60 * 1000,
       sameSite: "None",
-      // secure: (process.env.NODE_ENV = "production"),
+      secure: (process.env.NODE_ENV = "production"),
     });
 
     // 10) Extract specific properties from the user object
@@ -315,7 +315,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   if (!token) {
     return next(
       new ApiError(
-        "You are not login, Please login to get access this route",
+        "You are not logged in. Please log in to access this route",
         401
       )
     );
@@ -325,57 +325,60 @@ exports.protect = asyncHandler(async (req, res, next) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
   // 3) Check if user exists
-  const currentUser = await User.findById(decoded.userId);
-  const currentMentor = await Mentor.findById(decoded.userId);
-  if (!currentUser || !currentMentor) {
+  let currentUser;
+  let currentMentor;
+
+  // Check if the user exists
+  currentUser = await User.findById(decoded.userId);
+  if (!currentUser) {
+    // If not, check if it's a mentor
+    currentMentor = await Mentor.findById(decoded.userId);
+  }
+
+  if (!currentUser && !currentMentor) {
     return next(
-      new ApiError(
-        "The user that belong to this token does no longer exist",
-        401
-      )
+      new ApiError("The user associated with this token no longer exists", 401)
     );
   }
 
-  // 4) Check if user change his password after token created
+  // 4) Check if user changed their password after token creation
   if (currentUser) {
     if (currentUser.passwordChangedAt) {
       const passChangedTimestamp = parseInt(
         currentUser.passwordChangedAt.getTime() / 1000,
         10
       );
-      // Password changed after token created (Error)
+      // Password changed after token creation (Error)
       if (passChangedTimestamp > decoded.iat) {
         return next(
           new ApiError(
-            "User recently changed his password. please login again..",
+            "User recently changed their password. Please log in again.",
             401
           )
         );
       }
     }
     req.user = currentUser;
-    next();
-  }
-
-  if (currentMentor) {
+  } else if (currentMentor) {
     if (currentMentor.passwordChangedAt) {
       const passChangedTimestamp = parseInt(
         currentMentor.passwordChangedAt.getTime() / 1000,
         10
       );
-      // Password changed after token created (Error)
+      // Password changed after token creation (Error)
       if (passChangedTimestamp > decoded.iat) {
         return next(
           new ApiError(
-            "User recently changed his password. please login again..",
+            "User recently changed their password. Please log in again.",
             401
           )
         );
       }
     }
     req.user = currentMentor;
-    next();
   }
+
+  next();
 });
 
 // @desc    Authorization (User Permissions)

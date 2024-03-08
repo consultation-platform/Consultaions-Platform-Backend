@@ -35,15 +35,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
       new ApiError(`the user  for this id ${req.params.id} not found `, 404)
     );
   // Extract specific properties from the user object
-  const {
-    fname,
-    lname,
-    birthdate,
-    _id,
-    email,
-    active,
-    role,
-  } = user;
+  const { fname, lname, birthdate, _id, email, active, role } = user;
 
   // 4) send response to the client side with specific properties
   res.status(200).json({
@@ -84,11 +76,10 @@ exports.updateUserRole = asyncHandler(async (req, res, next) => {
 // @route   GET /api/users/getMe
 // @access  Private/Protect
 exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
-  if (req.user.active === false) {
-    return next(new ApiError("This is unactive account ", 404));
+  if (!req.user) {
+    return next(new ApiError("You are not logged in ", 401));
   }
-  req.params.id = req.user._id;
-  next();
+  res.status(200).json(req.user);
 });
 
 // @desc    Update logged user password
