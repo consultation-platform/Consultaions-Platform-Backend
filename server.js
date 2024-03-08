@@ -41,7 +41,7 @@ app.use(globalError);
 dbConnection();
 app.use(
   cors({
-    credentials: true,
+    credentials: false,
     origin: ["http://localhost:5173","https://booking21102001.netlify.app/", "*"],
   })
 );
