@@ -44,7 +44,7 @@ app.use(
     credentials: true,
     origin: [
       "http://localhost:5173",
-      "https://booking21102001.netlify.app/",
+      "https://booking21102001.netlify.app",
       "https://consultaions-platform.onrender.com",
       "*",
     ],
