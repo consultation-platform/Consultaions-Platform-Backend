@@ -252,7 +252,6 @@ exports.login = asyncHandler(async (req, res, next) => {
     // 3) Find user by email
     const user = await User.findOne({ email: req.body.email });
     const mentor = await Mentor.findOne({ email: req.body.email });
-    console.log(user, mentor);
     if (!user && !mentor) {
       return next(new ApiError("User not found", 404));
     }
