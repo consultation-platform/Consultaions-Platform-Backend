@@ -16,7 +16,8 @@ const authRoutes = require("./routes/auth.routes");
 const contactUsRoutes = require("./routes/contactUs.routes");
 const mentorsRoutes = require("./routes/mentor.routes");
 const honorBoardRoutes = require("./routes/honor.board.routes");
-
+const coursesRoutes = require("./routes/courses.routes.js");
+const videosRoutes = require("./routes/video.routes.js");
 app.use(express.json());
 app.use(cookieParser());
 
@@ -46,6 +47,8 @@ app.use("/api/cons-fields", consFieldsRoutes);
 app.use("/api/contact", contactUsRoutes);
 app.use("/api/mentors", mentorsRoutes);
 app.use("/api/honor-board", honorBoardRoutes);
+app.use("/api/courses", coursesRoutes);
+app.use("/api/videos", videosRoutes);
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });

@@ -5,13 +5,10 @@ const multerOptions = () => {
   const multerStorage = multer.memoryStorage();
 
   const multerFilter = function (req, file, cb) {
-    if (
-      file.mimetype.startsWith("image") ||
-      file.mimetype === "application/pdf"
-    ) {
+    if (file.mimetype.startsWith("image")) {
       cb(null, true);
     } else {
-      cb(new ApiError("Only Images and pdf files allowed", 400), false);
+      cb(new ApiError("Only Images allowed", 401), false);
     }
   };
 
