@@ -21,14 +21,15 @@ const videosRoutes = require("./routes/video.routes.js");
 app.use(express.json());
 app.use(cookieParser());
 
+// DATABASE CONNECTION
+dbConnection();
+
+// LOGGING
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
-  console.log(`mode: ${process.env.NODE_ENV}`);
+  console.log(`Node: ${process.env.NODE_ENV}`);
 }
 
-// Global error handling middleware for express
-app.use(globalError);
-dbConnection();
 app.use(
   cors({
     credentials: true,
@@ -49,9 +50,13 @@ app.use("/api/mentors", mentorsRoutes);
 app.use("/api/honor-board", honorBoardRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/videos", videosRoutes);
+
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
+
+// Global error handling middleware for express
+app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
