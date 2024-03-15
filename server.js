@@ -30,6 +30,7 @@ if (process.env.NODE_ENV === "development") {
   console.log(`Node: ${process.env.NODE_ENV}`);
 }
 
+// CORS 
 app.use(
   cors({
     credentials: true,
@@ -51,11 +52,10 @@ app.use("/api/honor-board", honorBoardRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/videos", videosRoutes);
 
+// Global error handling middleware for express
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
-
-// Global error handling middleware for express
 app.use(globalError);
 
 const PORT = process.env.PORT || 8000;

@@ -35,13 +35,13 @@ exports.getUser = asyncHandler(async (req, res, next) => {
       new ApiError(`the user  for this id ${req.params.id} not found `, 404)
     );
   // Extract specific properties from the user object
-  const { fname, lname, birthdate, _id, email, active, role } = user;
+  const { name, lname, birthdate, _id, email, role } = user;
 
   // 4) send response to the client side with specific properties
   res.status(200).json({
     message: "user  retrieved successfully",
     data: {
-      fname,
+      name,
       lname,
       birthdate,
       _id,
@@ -86,9 +86,6 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/updateMyPassword
 // @access  Private/Protect
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
-  if (req.user.active === false) {
-    return next(new ApiError("This is unactive account ", 404));
-  }
   // 1) Update user password based user payload (req.user._id)
   const user = await User.findByIdAndUpdate(
     req.user._id,
@@ -111,10 +108,6 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/updateMe
 // @access  Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
-  if (req.user.active === false) {
-    return next(new ApiError("This is unactive account ", 404));
-  }
-
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
     {

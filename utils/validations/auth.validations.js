@@ -4,11 +4,11 @@ const validatorMiddleware = require("../../middlewares/validator");
 const User = require("../../models/user.model");
 
 exports.signupValidator = [
-  check("fname")
+  check("name")
     .notEmpty()
-    .withMessage("User required")
+    .withMessage("User Name required")
     .isLength({ min: 3 })
-    .withMessage("First Name Too short ")
+    .withMessage("Name Too short ")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

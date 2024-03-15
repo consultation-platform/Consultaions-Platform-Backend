@@ -38,7 +38,9 @@ exports.getMentorById = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllActiveMentors = asyncHandler(async (req, res, next) => {
-  const mentors = await Mentor.find({ accepted: true });
+  const mentors = await Mentor.find({ accepted: true }).select(
+    "name phone email field"
+  );
 
   if (mentors.length === 0) {
     return res.status(404).json({ message: "No active mentors found." });
@@ -52,7 +54,9 @@ exports.getAllActiveMentors = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllNotActiveMentors = asyncHandler(async (req, res, next) => {
-  const mentors = await Mentor.find({ accepted: false });
+  const mentors = await Mentor.find({ accepted: false }).select(
+    "name phone email field"
+  );
 
   if (mentors.length === 0) {
     return res.status(404).json({ message: "No not active mentors found." });
@@ -76,7 +80,9 @@ exports.getMentorsByField = async (req, res, next) => {
     }
 
     // Find mentors by the provided field
-    const mentors = await Mentor.find({ field });
+    const mentors = await Mentor.find({ field }).select(
+      "name phone email field image"
+    );
 
     if (!mentors || mentors.length === 0) {
       return res
@@ -123,7 +129,9 @@ exports.getMentorsBySemester = async (req, res, next) => {
     }
 
     // Find mentors and calculate the semester dynamically based on birthdate
-    const mentors = await Mentor.find().lean();
+    const mentors = await Mentor.find()
+      .lean()
+      .select("name phone email field image");
 
     // Filter mentors based on birthdate semester
     const mentorsInSemester = mentors.filter((mentor) => {
@@ -137,7 +145,9 @@ exports.getMentorsBySemester = async (req, res, next) => {
         .json({ message: `No mentors found for semester '${semester}'` });
     }
 
-    res.status(200).json({ mentors: mentorsInSemester });
+    res
+      .status(200)
+      .json({ length: mentorsInSemester.length, mentors: mentorsInSemester });
   } catch (error) {
     console.error("Error retrieving mentors by semester:", error);
     res.status(500).json({ error: "Internal Server Error" });

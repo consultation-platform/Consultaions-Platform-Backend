@@ -68,7 +68,7 @@ exports.getOne = (Model) =>
 
 exports.getAll = (Model) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.find();
+    const document = await Model.find().select("title image price");
     if (!document) next(new ApiError(`Error Happend `, 404));
     if (document.length === 0) {
       res.status(200).json({ message: "There Is NO Data To Retrive" });
