@@ -6,17 +6,17 @@ const {
   deleteField,
   getAllFiedls,
 } = require("../services/cons.fields.service");
-
+const { protect, allowedTo } = require("../services/auth.service");
 // Create a new field
-router.post("/", createField);
+router.post("/", protect, allowedTo("manager", "admin"), createField);
 
 // Get all fields
 router.get("/", getAllFiedls);
 
 // Update a field by ID
-router.put("/:id", updateField);
+router.put("/:id", protect, allowedTo("manager", "admin"), updateField);
 
 // Delete a field by ID
-router.delete("/:id", deleteField);
+router.delete("/:id", protect, allowedTo("manager", "admin"), deleteField);
 
 module.exports = router;

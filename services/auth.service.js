@@ -9,6 +9,10 @@ const sendEmail = require("../utils/send.email");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 const Mentor = require("../models/mentor.model");
+const { uploadSingleImage } = require("../middlewares/uploadImages");
+
+
+exports.uploadProfileImage = uploadSingleImage("image");
 
 exports.signup = asyncHandler(async (req, res, next) => {
   const currentUser = await User.findOne({ email: req.body.email });

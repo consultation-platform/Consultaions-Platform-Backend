@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { saveSingleImage } = require("../middlewares/imageProcessing");
 
 const {
   signup,
@@ -11,6 +12,8 @@ const {
   verifyPassResetCode,
   resetPassword,
   logout,
+  uploadProfileImage,
+  protect,
 } = require("../services/auth.service");
 
 const {
@@ -20,13 +23,24 @@ const {
 } = require("../utils/validations/auth.validations");
 
 router.post("/login", login);
-router.post("/signup", signup);
-router.post("/signup-mentor", signupMentor);
+router.post(
+  "/signup",
+  signupValidator,
+  uploadProfileImage,
+  saveSingleImage,
+  signup
+);
+router.post(
+  "/signup-mentor",
+  uploadProfileImage,
+  saveSingleImage,
+  signupMentor
+);
 router.post("/verify-email", verifyEmail);
 router.post("/resend-code", resendVerificationCode);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-reset-code", verifyPassResetCode);
 router.put("/reset-password", resetePasswordValidator, resetPassword);
-router.post("/logout", logout);
+router.post("/logout", protect, logout);
 
 module.exports = router;

@@ -10,13 +10,30 @@ const {
   getMentorsByField,
   getMentorsBySemester,
 } = require("../services/mentor.service");
+const { allowedTo, protect } = require("../services/auth.service");
 
-router.get("/not-active", getAllNotActiveMentors);
-router.post("/unactivate/:id", unActivateMentor);
-router.post("/accept/:id", acceptmentor);
+router.get(
+  "/not-active",
+  protect,
+  allowedTo("manager", "admin"),
+  getAllNotActiveMentors
+);
+router.post(
+  "/unactivate/:id",
+  protect,
+  allowedTo("manager", "admin"),
+  unActivateMentor
+);
+router.post(
+  "/accept/:id",
+  protect,
+  allowedTo("manager", "admin"),
+  acceptmentor
+);
 router.get("/active", getAllActiveMentors);
 router.get("/field", getMentorsByField);
 router.get("/semester", getMentorsBySemester);
-router.get("/:id", getMentorById);
+
+router.get("/:id", protect, allowedTo("manager", "admin"), getMentorById);
 
 module.exports = router;

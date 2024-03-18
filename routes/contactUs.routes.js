@@ -21,9 +21,9 @@ const { allowedTo, protect } = require("../services/auth.service");
 // Create contactForm
 router.post("/", contactFormValidation, createContactForm);
 
-// router.use(protect);
+router.use(protect);
 //  Read contactForms
-router.get("/", getAllContactForms);
+router.get("/", allowedTo("manager", "admin"), getAllContactForms);
 
 //  Get contactForm by id
 router.get("/:id", FormIdValidation, getContactFormById);
@@ -31,7 +31,7 @@ router.get("/:id", FormIdValidation, getContactFormById);
 //  Delete contactForm
 router.delete(
   "/:id",
-  // allowedTo("manager"),
+  allowedTo("manager", "admin"),
   FormIdValidation,
   deleteContactForm
 );
