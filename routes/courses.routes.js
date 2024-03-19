@@ -8,11 +8,8 @@ const {
   deleteCourse,
   getCourseById,
   uploadCourseImage,
-  checksubscribed,
-  getAllvideosForCourses,
 } = require("../services/courses.service");
 const { saveSingleImage } = require("../middlewares/imageProcessing");
-const { subscribed } = require("../middlewares/subscribers");
 const { protect, allowedTo } = require("../services/auth.service");
 const { checkOwner } = require("../middlewares/check.owner");
 

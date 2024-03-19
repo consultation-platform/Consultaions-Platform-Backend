@@ -10,17 +10,16 @@ exports.checkOwner = asyncHandler(async (req, res, next) => {
   } else if (req.params.id) {
     courseID = req.params.id;
   } else {
-    return next(new ApiError(`the course id is not provided`));
+    return next(new ApiError(`The course ID is not provided`));
   }
+
   const course = await Course.findById(courseID);
   if (!course) {
-    return next(
-      new ApiError(`the course for this id ${req.params.id} is not exist`)
-    );
+    return next(new ApiError(`The course with ID ${courseID} does not exist`));
   }
 
   if (course.owner.toString() !== req.user.id && req.user.role !== "manager") {
-    return next(new ApiError(`you are not the owner of this course`));
+    return next(new ApiError(`You are not the owner of this course`));
   }
 
   next();

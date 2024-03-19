@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const ApiError = require("../utils/api.error");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
+const Mentor = require("../models/mentor.model");
 
 const { uploadSingleImage } = require("../middlewares/uploadImages");
 
@@ -56,6 +57,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/:id
 // @access  Private/Admin
 exports.updateUserRole = asyncHandler(async (req, res, next) => {
+  
   const document = await User.findByIdAndUpdate(
     req.params.id,
     {
@@ -86,9 +88,16 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/updateMyPassword
 // @access  Private/Protect
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
+
+  let Model;
+  if (req.user.role === "mentor") {
+    Model = Mentor;
+  } else {
+    Model = User;
+  }
   // 1) Update user password based user payload (req.user._id)
-  const user = await User.findByIdAndUpdate(
-    req.user._id,
+  const user = await Model.findByIdAndUpdate(
+    req.user.id,
     {
       password: await bcrypt.hash(req.body.password, 12),
       passwordChangedAt: Date.now(),
@@ -108,8 +117,15 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/updateMe
 // @access  Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user._id,
+   
+  let Model;
+  if (req.user.role === "mentor") {
+    Model = Mentor;
+  } else {
+    Model = User;
+  }
+  const updatedUser = await Model.findByIdAndUpdate(
+    req.user.id,
     {
       name: req.body.name,
       email: req.body.email,
