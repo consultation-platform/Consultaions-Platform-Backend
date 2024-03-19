@@ -25,7 +25,6 @@ const {
 router.post("/login", login);
 router.post(
   "/signup",
-  signupValidator,
   uploadProfileImage,
   saveSingleImage,
   signup
