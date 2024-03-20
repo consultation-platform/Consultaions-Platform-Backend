@@ -40,7 +40,17 @@ exports.updateCourse = factory.updateOne(Course);
 
 exports.deleteCourse = factory.deleteOne(Course);
 
-exports.getCourseById = factory.getOne(Course);
+exports.getCourseById = asyncHandler(async (req, res, next) => {
+  const document = await Course.findById(req.params.id).populate({
+    path: "videos",
+    select: "title , url",
+  });
+  if (!document)
+    return next(
+      new ApiError(`the Document  for this id ${req.params.id} not found `, 404)
+    );
+  res.status(200).json(document);
+});
 
 exports.getAllCourses = factory.getAll(Course);
 

@@ -57,7 +57,6 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/:id
 // @access  Private/Admin
 exports.updateUserRole = asyncHandler(async (req, res, next) => {
-  
   const document = await User.findByIdAndUpdate(
     req.params.id,
     {
@@ -88,7 +87,6 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/updateMyPassword
 // @access  Private/Protect
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
-
   let Model;
   if (req.user.role === "mentor") {
     Model = Mentor;
@@ -108,7 +106,7 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   );
 
   // 2) Generate token
-  const token = createToken(user._id);
+  const token = createToken(user.id);
 
   res.status(201).json({ data: user, token });
 });
@@ -117,7 +115,6 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/updateMe
 // @access  Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
-   
   let Model;
   if (req.user.role === "mentor") {
     Model = Mentor;
