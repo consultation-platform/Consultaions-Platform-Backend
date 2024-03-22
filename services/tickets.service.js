@@ -4,7 +4,6 @@ const ConsultationTicket = require("../models/consultation.model");
 const ApiError = require("../utils/api.error");
 
 exports.createTicket = asyncHandler(async (req, res) => {
-  console.log(req.user);
   try {
     const document = new ConsultationTicket(req.body);
     document.owner = req.user.id;
@@ -39,7 +38,7 @@ exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
     }
 
     // Return tickets
-    res.status(200).json({ data: tickets, length: tickets.length });
+    res.status(200).json({ length: tickets.length, data: tickets });
   } catch (error) {
     // Handle other errors
     return next(new ApiError(`Error retrieving tickets: ${error.message}`));
@@ -58,5 +57,18 @@ exports.getAllTicketsForMentor = asyncHandler(async (req, res, next) => {
       )
     );
   }
-  res.status(200).json({ data: tickets, length: tickets.length });
+  res.status(200).json({ length: tickets.length, data: tickets });
+});
+
+exports.getLoggedMentorTickets = asyncHandler(async (req, res, next) => {
+  const tickets = await ConsultationTicket.find({
+    owner: req.user.id,
+    isActive: true,
+  });
+  if (!tickets) {
+    return next(
+      new ApiError(`The tickets for this mentor ${req.user.id} were not found`)
+    );
+  }
+  res.status(200).json({ length: tickets.length, data: tickets });
 });

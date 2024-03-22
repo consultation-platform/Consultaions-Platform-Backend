@@ -8,6 +8,9 @@ const {
   deleteCourse,
   getCourseById,
   uploadCourseImage,
+  getAllCoursesForField,
+  getAllCoursesForMentor,
+  getLoggedMentorCourses,
 } = require("../services/courses.service");
 const { saveSingleImage } = require("../middlewares/imageProcessing");
 const { protect, allowedTo } = require("../services/auth.service");
@@ -23,6 +26,15 @@ router.post(
   saveSingleImage,
   createCourse
 );
+
+// Get all tickets for field
+router.get("/field/:field", getAllCoursesForField);
+
+// Get all tickets for mentor
+router.get("/mentor/:mentor", getAllCoursesForMentor);
+
+// Get all tickets for logged mentor
+router.get("/my-courses", protect, getLoggedMentorCourses);
 
 router.get("/:id", getCourseById);
 
