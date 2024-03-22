@@ -9,6 +9,7 @@ const CourseSchema = new Schema({
   price: { type: Number, required: true },
   image: { type: String, required: [true, "Course image is required"] },
   description: String,
+  field: String,
 });
 
 const Course = mongoose.model("Course", CourseSchema);

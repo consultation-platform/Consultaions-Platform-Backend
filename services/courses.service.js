@@ -12,6 +12,7 @@ exports.createCourse = async (req, res) => {
   try {
     const document = new Course(req.body);
     document.owner = req.user.id;
+    document.field = req.user.field;
     await document.save();
     res.status(201).json({ message: "created successfully", document });
   } catch (error) {
@@ -54,4 +55,50 @@ exports.getCourseById = asyncHandler(async (req, res, next) => {
 
 exports.getAllCourses = factory.getAll(Course);
 
-exports.checksubscribed = subscribed(Course);
+exports.getLoggedMentorCourses = asyncHandler(async (req, res, next) => {
+  const course = await Course.find({
+    owner: req.user.id,
+  });
+  if (!course) {
+    return next(
+      new ApiError(`The course for this mentor ${req.user.id} were not found`)
+    );
+  }
+  res.status(200).json({ length: course.length, data: course });
+});
+
+exports.getAllCoursesForField = asyncHandler(async (req, res, next) => {
+  try {
+    const courses = await Course.find({
+      field: req.params.field,
+    });
+
+    // Check if courses array is empty
+    if (courses.length === 0) {
+      return next(
+        new ApiError(`No courses found for field ${req.params.field}`)
+      );
+    }
+
+    // Return courses
+    res.status(200).json({ length: courses.length, data: courses });
+  } catch (error) {
+    // Handle other errors
+    return next(new ApiError(`Error retrieving courses: ${error.message}`));
+  }
+});
+
+exports.getAllCoursesForMentor = asyncHandler(async (req, res, next) => {
+  const courses = await Course.find({
+    mentor: req.params.mentor,
+    isActive: true,
+  });
+  if (!courses) {
+    return next(
+      new ApiError(
+        `The courses for this mentor ${req.params.mentor} were not found`
+      )
+    );
+  }
+  res.status(200).json({ length: courses.length, data: courses });
+});

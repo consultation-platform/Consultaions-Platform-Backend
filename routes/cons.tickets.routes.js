@@ -7,6 +7,7 @@ const {
   getAllTicketsForField,
   getAllTicketsForMentor,
   deleteTicket,
+  getLoggedMentorTickets,
 } = require("../services/tickets.service");
 
 // const {
@@ -25,6 +26,9 @@ router.get("/field/:field", getAllTicketsForField);
 
 // Get all tickets for mentor
 router.get("/mentor/:mentor", getAllTicketsForMentor);
+
+// Get all tickets for logged mentor
+router.get("/my-tickets", protect, getLoggedMentorTickets);
 
 // Get ticket by id
 router.get("/:id", getTicketById);
