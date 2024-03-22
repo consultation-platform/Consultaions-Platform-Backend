@@ -18,6 +18,8 @@ const mentorsRoutes = require("./routes/mentor.routes");
 const honorBoardRoutes = require("./routes/honor.board.routes");
 const coursesRoutes = require("./routes/courses.routes.js");
 const videosRoutes = require("./routes/video.routes.js");
+const consTicketRoutes = require("./routes/cons.tickets.routes.js");
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -30,7 +32,7 @@ if (process.env.NODE_ENV === "development") {
   console.log(`Node: ${process.env.NODE_ENV}`);
 }
 
-// CORS 
+// CORS
 app.use(
   cors({
     credentials: true,
@@ -51,6 +53,7 @@ app.use("/api/mentors", mentorsRoutes);
 app.use("/api/honor-board", honorBoardRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/videos", videosRoutes);
+app.use("/api/cons-tickets", consTicketRoutes);
 
 // Global error handling middleware for express
 app.all("*", (req, res, next) => {

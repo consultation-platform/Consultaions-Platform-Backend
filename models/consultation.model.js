@@ -17,6 +17,16 @@ const consultationTicketSchema = new mongoose.Schema(
       required: [true, "the ticket date is required "],
     },
     type: { type: String, enum: ["online", "offline"] },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Mentor",
+      required: [true, "the mentor for this consultation is required"],
+    },
+    field: {
+      type: String,
+      // required: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
