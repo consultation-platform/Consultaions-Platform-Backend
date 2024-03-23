@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const fieldsSchema = new Schema({
   field: {
-    type: [String],
+    type: String,
   },
 });
 
