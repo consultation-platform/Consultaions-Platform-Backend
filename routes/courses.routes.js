@@ -11,10 +11,15 @@ const {
   getAllCoursesForField,
   getAllCoursesForMentor,
   getLoggedMentorCourses,
+  createComment,
+  getAllComments,
+  deleteComment,
+  updateComment,
 } = require("../services/courses.service");
 const { saveSingleImage } = require("../middlewares/imageProcessing");
 const { protect, allowedTo } = require("../services/auth.service");
 const { checkOwner } = require("../middlewares/check.owner");
+const { checkCommentOwner } = require("../middlewares/check.comment.owner");
 
 router.get("/", getAllCourses);
 
@@ -35,6 +40,31 @@ router.get("/mentor/:mentor", getAllCoursesForMentor);
 
 // Get all tickets for logged mentor
 router.get("/my-courses", protect, getLoggedMentorCourses);
+
+router.post(
+  "/:id/comment",
+  protect,
+  allowedTo("user", "manager"),
+  createComment
+);
+
+router.get("/:id/comments", getAllComments);
+
+router.delete(
+  "/:id/comment/:id",
+  protect,
+  allowedTo("user", "manager"),
+  checkCommentOwner,
+  deleteComment
+);
+
+router.put(
+  "/:id/comment/:id",
+  protect,
+  allowedTo("user", "manager"),
+  checkCommentOwner,
+  updateComment
+);
 
 router.get("/:id", getCourseById);
 
