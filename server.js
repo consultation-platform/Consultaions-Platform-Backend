@@ -19,6 +19,7 @@ const honorBoardRoutes = require("./routes/honor.board.routes");
 const coursesRoutes = require("./routes/courses.routes.js");
 const videosRoutes = require("./routes/video.routes.js");
 const consTicketRoutes = require("./routes/cons.tickets.routes.js");
+const questionRoutes = require("./routes/question.routes.js");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -53,6 +54,7 @@ app.use("/api/mentors", mentorsRoutes);
 app.use("/api/honor-board", honorBoardRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/videos", videosRoutes);
+app.use("/api/questions", questionRoutes);
 app.use("/api/cons-tickets", consTicketRoutes);
 
 // Global error handling middleware for express
