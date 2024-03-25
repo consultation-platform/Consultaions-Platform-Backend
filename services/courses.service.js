@@ -3,7 +3,7 @@ const ApiError = require("../utils/api.error");
 const { uploadSingleImage } = require("../middlewares/uploadImages");
 const Course = require("../models/course.model");
 const factory = require("./handlers.factory");
- 
+
 exports.uploadCourseImage = uploadSingleImage("image");
 
 exports.createCourse = async (req, res) => {
@@ -28,7 +28,7 @@ exports.deleteCourse = factory.deleteOne(Course);
 exports.getCourseById = asyncHandler(async (req, res, next) => {
   const document = await Course.findById(req.params.id).populate({
     path: "videos",
-    select: "title , url",
+    select: "title description url",
   });
   if (!document)
     return next(
