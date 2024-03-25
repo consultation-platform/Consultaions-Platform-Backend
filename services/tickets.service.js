@@ -48,7 +48,6 @@ exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
 exports.getAllTicketsForMentor = asyncHandler(async (req, res, next) => {
   const tickets = await ConsultationTicket.find({
     mentor: req.params.mentor,
-    isActive: true,
   });
   if (!tickets) {
     return next(
