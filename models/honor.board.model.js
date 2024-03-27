@@ -3,13 +3,9 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const honorBoardSchema = new Schema({
-  image: {
-    type: String,
-    required: true,
-  },
-  profileLink: {
-    type: String,
-    required: true,
+  mentor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Mentor",
   },
 });
 
