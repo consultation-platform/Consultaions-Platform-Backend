@@ -25,6 +25,6 @@ router.get("/:id", getQuestionById);
 router.put("/:id", protect, allowedTo("manager", "admin"), updateQuestion);
 
 // Delete question by id
-router.delete("/:id", allowedTo("manager", "admin"), deleteQuestion);
+router.delete("/:id", protect, allowedTo("manager", "admin"), deleteQuestion);
 
 module.exports = router;
