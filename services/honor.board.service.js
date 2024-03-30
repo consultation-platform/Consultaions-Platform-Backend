@@ -2,7 +2,27 @@ const HonorBoard = require("../models/honor.board.model");
 const factory = require("./handlers.factory");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
-exports.createHonorBoardItem = factory.createOne(HonorBoard);
+const Mentor = require("../models/mentor.model");
+exports.createHonorBoardItem = asyncHandler(async (req, res) => {
+  try {
+    // Check if mentor with provided ID exists
+    const mentor = await Mentor.findById(req.body.mentor);
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found for this id " });
+    }
+
+    // If mentor exists, proceed to create the honor board item
+    const document = new Mentor(req.body);
+    await document.save();
+    res.status(201).json({ message: "created successfully", document });
+  } catch (error) {
+    console.error("Error occurred while creating:", error);
+    res.status(500).json({
+      error: "Error occurred while creating",
+      details: error.message,
+    });
+  }
+});
 
 exports.deleteHonorBoardItem = factory.deleteOne(HonorBoard);
 
