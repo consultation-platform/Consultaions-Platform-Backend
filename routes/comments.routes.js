@@ -5,6 +5,7 @@ const {
   getAllComments,
   deleteComment,
   updateComment,
+  getCommentByID,
 } = require("../services/comments.service");
 const { checkCommentOwner } = require("../middlewares/check.comment.owner");
 const { allowedTo, protect } = require("../services/auth.service");
@@ -13,12 +14,12 @@ const { allowedTo, protect } = require("../services/auth.service");
 router.post(
   "/:id",
   protect,
-  //   allowedTo("user", "manager", "admin"),
   createComment
 );
 
 // Read all comments
-router.get("/:id", getAllComments);
+router.get("/course/:id", getAllComments);
+router.get("/:id", getCommentByID);
 
 // Update Comment
 router.put(

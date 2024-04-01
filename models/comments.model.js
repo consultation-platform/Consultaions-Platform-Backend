@@ -14,6 +14,7 @@ const commentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
     },
+    replies: [{ type: mongoose.Schema.Types.ObjectId,ref: "CommentReply" }],
   },
   { timestamps: true }
 );

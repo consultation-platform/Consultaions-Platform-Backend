@@ -1,6 +1,6 @@
 const Comment = require("../models/comments.model");
 const asyncHandler = require("express-async-handler");
-
+const factory = require('./handlers.factory')
 exports.createComment = asyncHandler(async (req, res, next) => {
   try {
     const comment = new Comment({
@@ -75,4 +75,16 @@ exports.getAllComments = asyncHandler(async (req, res, next) => {
     );
   }
   res.status(200).json({ length: comments.length, data: comments });
+});
+
+exports.getCommentByID = asyncHandler(async (req, res, next) => {
+  const document = await Comment.findById(req.params.id);
+  if (!document)
+    return next(
+      new ApiError(
+        `the Document  for this id ${req.params.id} not found `,
+        404
+      )
+    );
+  res.status(200).json(document);
 });
