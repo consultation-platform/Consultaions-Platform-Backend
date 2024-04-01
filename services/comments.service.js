@@ -78,7 +78,10 @@ exports.getAllComments = asyncHandler(async (req, res, next) => {
 });
 
 exports.getCommentByID = asyncHandler(async (req, res, next) => {
-  const document = await Comment.findById(req.params.id);
+  const document = await Comment.findById(req.params.id).populate({
+    path:"replies",
+    select:"text"
+  });
   if (!document)
     return next(
       new ApiError(
