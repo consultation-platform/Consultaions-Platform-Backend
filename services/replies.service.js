@@ -1,6 +1,6 @@
 const CommentReply = require("../models/replies.model");
 const asyncHandler = require("express-async-handler");
-
+const Comment = require("../models/comments.model")
 exports.createReply = asyncHandler(async (req, res, next) => {
   try {
     const reply = new CommentReply({
@@ -9,6 +9,12 @@ exports.createReply = asyncHandler(async (req, res, next) => {
       comment: req.params.id,
     });
     await reply.save();
+   await Comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $push:{replies:reply}
+    },
+    {new:true})
     res.status(201).json({ message: "created successfully", reply });
   } catch (error) {
     console.error("Error occurred while creating:", error);
