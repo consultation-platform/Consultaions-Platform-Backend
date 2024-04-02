@@ -1,6 +1,8 @@
 const Comment = require("../models/comments.model");
 const asyncHandler = require("express-async-handler");
+const ApiError = require("../utils/api.error");
 const factory = require('./handlers.factory')
+
 exports.createComment = asyncHandler(async (req, res, next) => {
   try {
     const comment = new Comment({
