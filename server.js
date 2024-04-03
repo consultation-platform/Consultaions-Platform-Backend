@@ -22,6 +22,7 @@ const consTicketRoutes = require("./routes/cons.tickets.routes.js");
 const questionRoutes = require("./routes/question.routes.js");
 const commentRoutes = require("./routes/comments.routes.js");
 const repliesRoutes = require("./routes/replies.route.js");
+const coverRoutes = require("./routes/cover.routes.js");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -61,6 +62,7 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/cons-tickets", consTicketRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/replies", repliesRoutes);
+app.use("/api/cover", coverRoutes);
 
 // Global error handling middleware for express
 app.all("*", (req, res, next) => {

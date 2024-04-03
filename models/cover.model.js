@@ -13,4 +13,8 @@ const coverSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-})
+}, { timestamps: true })
+
+const Cover = mongoose.model("Cover", coverSchema);
+
+module.exports = Cover;
