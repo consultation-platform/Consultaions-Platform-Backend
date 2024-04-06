@@ -3,6 +3,7 @@ const factory = require("./handlers.factory");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
 const Mentor = require("../models/mentor.model");
+
 exports.createHonorBoardItem = asyncHandler(async (req, res) => {
   try {
     // Check if mentor with provided ID exists
@@ -12,7 +13,7 @@ exports.createHonorBoardItem = asyncHandler(async (req, res) => {
     }
 
     // If mentor exists, proceed to create the honor board item
-    const document = new Mentor(req.body);
+    const document = new HonorBoard(req.body);
     await document.save();
     res.status(201).json({ message: "created successfully", document });
   } catch (error) {

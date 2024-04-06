@@ -39,7 +39,7 @@ exports.getMentorById = asyncHandler(async (req, res, next) => {
 
 exports.getAllActiveMentors = asyncHandler(async (req, res, next) => {
   const mentors = await Mentor.find({ accepted: true }).select(
-    "name phone email field active"
+    "name phone email field  accepted"
   );
 
   if (mentors.length === 0) {

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {
+const {             
     createCover,
     getAllCovers,
     getCoverById,
@@ -15,7 +15,7 @@ const { allowedTo, protect } = require("../services/auth.service");
 
 // Create a new cover
 router.post("/",
-//  protect, allowedTo("manager", "admin"), 
+ protect, allowedTo("manager", "admin"), 
  uploadCoverImage,saveSingleImage,createCover);
 
 // Get all covers
@@ -24,8 +24,8 @@ router.get("/", getAllCovers);
 // Update cover by id
 router.put(
     "/:id",
-    // protect,
-    // allowedTo("manager", "admin"),
+    protect,
+    allowedTo("manager", "admin"),
     uploadCoverImage,saveSingleImage,
     updateCover
 );
