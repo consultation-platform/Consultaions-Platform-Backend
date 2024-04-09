@@ -4,9 +4,10 @@ const ApiError = require("../utils/api.error");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 const Mentor = require("../models/mentor.model");
-
 const { uploadSingleImage } = require("../middlewares/uploadImages");
 
+
+exports.uploadProfileImage = uploadSingleImage("image");
 exports.uploadPlaylistImage = uploadSingleImage("image");
 
 // @desc    Get list of users
@@ -127,6 +128,7 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
+      image:req.body.image,
     },
     { new: true }
   );

@@ -102,52 +102,48 @@ exports.getMentorsBySemester = async (req, res, next) => {
     // Extract the semester value from the query parameters
     const semester = req.query.semester;
 
-    // Check if the semester parameter is provided
-    if (!semester) {
-      return res
-        .status(400)
-        .json({ message: "Semester parameter is required" });
+    // Check if the semester parameter is provided and valid
+    if (!semester || !['spring', 'fall', 'winter', 'summer'].includes(semester)) {
+      return res.status(400).json({ message: "Invalid or missing semester parameter" });
     }
 
-    // Define the start and end dates for the semester (assuming a standard academic year)
+    // Define the start and end dates for the semester
     let startDate, endDate;
 
+    const currentYear = new Date().getFullYear();
+
     if (semester === "fall") {
-      startDate = new Date(`${new Date().getFullYear()}-09-01`);
-      endDate = new Date(`${new Date().getFullYear()}-12-31`);
+      startDate = new Date(`${currentYear}-09-23`);
+      endDate = new Date(`${currentYear}-12-31`);
     } else if (semester === "spring") {
-      startDate = new Date(`${new Date().getFullYear()}-01-01`);
-      endDate = new Date(`${new Date().getFullYear()}-05-31`);
+      startDate = new Date(`${currentYear}-03-21`);
+      endDate = new Date(`${currentYear}-05-31`);
     } else if (semester === "summer") {
-      startDate = new Date(`${new Date().getFullYear()}-06-01`);
-      endDate = new Date(`${new Date().getFullYear()}-08-31`);
+      startDate = new Date(`${currentYear}-06-21`);
+      endDate = new Date(`${currentYear}-08-31`);
     } else if (semester === "winter") {
-      startDate = new Date(`${new Date().getFullYear()}-01-01`);
-      endDate = new Date(`${new Date().getFullYear()}-02-28`);
-    } else {
-      return res.status(400).json({ message: "Invalid semester parameter" });
+      startDate = new Date(`${currentYear}-12-22`);
+      endDate = new Date(`${currentYear + 1}-02-28`);
     }
 
-    // Find mentors and calculate the semester dynamically based on birthdate
-    const mentors = await Mentor.find()
-      .lean()
-      .select("name phone email field image");
+    console.log(`Start date for ${semester}: ${startDate}`);
+    console.log(`End date for ${semester}: ${endDate}`);
 
-    // Filter mentors based on birthdate semester
-    const mentorsInSemester = mentors.filter((mentor) => {
-      const birthdate = new Date(mentor.birthdate);
-      return birthdate >= startDate && birthdate <= endDate;
-    });
+    // Find mentors with birthdates within the semester
+    const mentors = await Mentor.find({
+      birthdate: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).lean().select("name phone email field image");
 
-    if (!mentorsInSemester || mentorsInSemester.length === 0) {
-      return res
-        .status(404)
-        .json({ message: `No mentors found for semester '${semester}'` });
+    console.log(`Number of mentors found for ${semester}: ${mentors.length}`);
+
+    if (!mentors || mentors.length === 0) {
+      return res.status(404).json({ message: `No mentors found for semester '${semester}'` });
     }
 
-    res
-      .status(200)
-      .json({ length: mentorsInSemester.length, mentors: mentorsInSemester });
+    res.status(200).json({ length: mentors.length, mentors: mentors });
   } catch (error) {
     console.error("Error retrieving mentors by semester:", error);
     res.status(500).json({ error: "Internal Server Error" });

@@ -9,14 +9,15 @@ const {
   updateLoggedUserPassword,
   updateUserRole,
 } = require("../services/user.service");
+const { saveSingleImage } = require("../middlewares/imageProcessing");
 
-// const {} = require("../utils/validations/user.validations");
-const { allowedTo, protect } = require("../services/auth.service");
+const { allowedTo, protect, uploadProfileImage } = require("../services/auth.service");
 router.use(protect);
 
 router.get("/", getUsers);
 router.get("/me", getLoggedUserData);
-router.put("/updateMe", updateLoggedUserData);
+router.put("/updateMe",uploadProfileImage,
+saveSingleImage, updateLoggedUserData);
 router.put("/update-password", updateLoggedUserPassword);
 router.put("/update-role", updateUserRole);
 

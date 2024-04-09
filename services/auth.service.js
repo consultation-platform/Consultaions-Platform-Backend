@@ -225,7 +225,7 @@ exports.resendVerificationCode = asyncHandler(async (req, res, next) => {
     await mentor.save();
 
     // 5) Send the new verification code via email
-    const message = `Hi ${user.name},
+    const message = `Hi ${mentor.name},
           \n You requested a new verification code for your Sayees account. Here it is:
           \n ${verificationCode} \n
           \n Thank you!
@@ -296,12 +296,19 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 10) Extract specific properties from the user object
     const userData = user
-      ? { _id: user._id, name: user.name, email: user.email, role: user.role }
+      ? { 
+        _id: user._id,
+         name: user.name,
+         email: user.email, 
+         role: user.role,
+         image: user.image
+        }
       : {
           _id: mentor._id,
           name: mentor.name,
           email: mentor.email,
           role: mentor.role,
+          image: mentor.image,
         };
 
     // 11) Send response to the client with specific properties
