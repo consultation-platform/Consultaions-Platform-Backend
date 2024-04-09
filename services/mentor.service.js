@@ -110,8 +110,7 @@ exports.getMentorsBySemester = async (req, res, next) => {
     // Define the start and end dates for the semester
     let startDate, endDate;
 
-    const currentYear = new Date().getFullYear();
-
+    const currentYear =2001
     if (semester === "fall") {
       startDate = new Date(`${currentYear}-09-23`);
       endDate = new Date(`${currentYear}-12-31`);
