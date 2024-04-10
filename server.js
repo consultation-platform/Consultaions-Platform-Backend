@@ -66,6 +66,10 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/replies", repliesRoutes);
 app.use("/api/cover", coverRoutes);
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Global error handling middleware for express
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
