@@ -97,54 +97,94 @@ exports.getMentorsByField = async (req, res, next) => {
   }
 };
 
-exports.getMentorsBySemester = async (req, res, next) => {
+exports.getMentorsBySemester = asyncHandler(async (req, res) => {
   try {
-    // Extract the semester value from the query parameters
-    const semester = req.query.semester;
-
-    // Check if the semester parameter is provided and valid
-    if (!semester || !['spring', 'fall', 'winter', 'summer'].includes(semester)) {
-      return res.status(400).json({ message: "Invalid or missing semester parameter" });
+    if(!req.params.semester){
+      return res.status(400).json({message: "Semester parameter is required"});
     }
+    const mentors = await Mentor.find({}).select('name email birthdate');
+    let filteredMentors = [];
 
-    // Define the start and end dates for the semester
-    let startDate, endDate;
+    for (let i = 0; i < mentors.length; i++) {
+      const element = mentors[i].birthdate;
+      const birthdate = new Date(element);
+      const day = birthdate.getDate();
+      const month = birthdate.getMonth() + 1;
 
-    const currentYear =2001
-    if (semester === "fall") {
-      startDate = new Date(`${currentYear}-09-23`);
-      endDate = new Date(`${currentYear}-12-31`);
-    } else if (semester === "spring") {
-      startDate = new Date(`${currentYear}-03-21`);
-      endDate = new Date(`${currentYear}-05-31`);
-    } else if (semester === "summer") {
-      startDate = new Date(`${currentYear}-06-21`);
-      endDate = new Date(`${currentYear}-08-31`);
-    } else if (semester === "winter") {
-      startDate = new Date(`${currentYear}-12-22`);
-      endDate = new Date(`${currentYear + 1}-02-28`);
-    }
-
-    console.log(`Start date for ${semester}: ${startDate}`);
-    console.log(`End date for ${semester}: ${endDate}`);
-
-    // Find mentors with birthdates within the semester
-    const mentors = await Mentor.find({
-      birthdate: {
-        $gte: startDate,
-        $lte: endDate
+      if (req.params.semester === 'spring') {
+        switch (month) {
+          case 3:
+            if (day >= 23) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+          case 4:
+          case 5:
+          case 6:
+            if (day <= 22) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+        }
+      } else if (req.params.semester === 'summer') {
+        switch (month) {
+          case 6:
+            if (day >= 23) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+          case 7:
+          case 8:
+          case 9:
+            if (day <= 22) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+        }
+      } else if (req.params.semester === 'winter') {
+        switch (month) {
+          case 12:
+            if (day >= 23) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+          case 1:
+          case 2:
+          case 3:
+            if (day <= 22) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+        }
+      } else if (req.params.semester === 'fall') {
+        switch (month) {
+          case 9:
+            if (day >= 23) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+          case 10:
+          case 11:
+          case 12:
+            if (day <= 22) {
+              filteredMentors.push(mentors[i]);
+            }
+            break;
+        }
+      } else {
+        return res.status(404).json({ message: 'Invalid semester provided' });
       }
-    }).lean().select("name phone email field image");
-
-    console.log(`Number of mentors found for ${semester}: ${mentors.length}`);
-
-    if (!mentors || mentors.length === 0) {
-      return res.status(404).json({ message: `No mentors found for semester '${semester}'` });
     }
 
-    res.status(200).json({ length: mentors.length, mentors: mentors });
+    if (filteredMentors.length === 0) {
+      return res.status(404).json({ message: 'No mentors found in the specified date range for the provided semester' });
+    }
+
+    res.status(200).json({ message: 'Mentors retrieved successfully', length: filteredMentors.length, mentors: filteredMentors });
+    filteredMentors = [];
   } catch (error) {
-    console.error("Error retrieving mentors by semester:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching mentors:', error);
+    res.status(500).json({ message: 'Error fetching mentors' });
   }
-};
+});
+

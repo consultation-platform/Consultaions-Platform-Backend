@@ -9,6 +9,7 @@ const {
   getAllNotActiveMentors,
   getMentorsByField,
   getMentorsBySemester,
+  getMentorsByBirthdate,
 } = require("../services/mentor.service");
 const { allowedTo, protect } = require("../services/auth.service");
 
@@ -32,8 +33,8 @@ router.post(
 );
 router.get("/active", getAllActiveMentors);
 router.get("/field", getMentorsByField);
-router.get("/semester", getMentorsBySemester);
+router.get("/semester/:semester", getMentorsBySemester);
 
-router.get("/:id", protect, allowedTo("manager", "admin"), getMentorById);
+// router.get("/:id", protect, allowedTo("manager", "admin"), getMentorById);
 
 module.exports = router;
