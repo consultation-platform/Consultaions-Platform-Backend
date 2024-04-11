@@ -99,7 +99,7 @@ exports.getMentorsByField = async (req, res, next) => {
 
 exports.getMentorsBySemester = asyncHandler(async (req, res) => {
   try {
-    const validSemesters = ['الشتاء', 'الصيف', 'الربيع', 'الخريف'];
+    const validSemesters = ['winter', 'summer', 'spring', 'fall'];
     
     if (!req.params.semester || !validSemesters.includes(req.params.semester)) {
       return res.status(400).json({ message: "Invalid or missing semester parameter" });
@@ -114,22 +114,22 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
       const day = birthdate.getDate();
 
       switch (req.params.semester) {
-        case 'الربيع':
+        case 'spring':
           if ((month === 3 && day >= 23) || (month >= 4 && month <= 6) || (month === 6 && day <=22)) {
             filteredMentors.push(mentor);
           }
           break;
-        case 'الصيف':
+        case 'summer':
           if ((month === 6 && day >= 23) || (month >= 7 && month <= 9) || (month === 9 && day <=22)) {
             filteredMentors.push(mentor);
           }
           break;
-        case 'الشتاء':
+        case 'winter':
           if ((month === 12 && day >= 23) || (month >= 1 && month <= 3) || (month === 3 && day <=22)) {
             filteredMentors.push(mentor);
           }
           break;
-        case 'الخريف':
+        case 'fall':
           if ((month === 9 && day >= 23) || (month >= 10 && month <= 11) || (month === 12 && day <=22)) {
             filteredMentors.push(mentor);
           }
