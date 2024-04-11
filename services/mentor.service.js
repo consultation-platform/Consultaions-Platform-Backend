@@ -99,80 +99,43 @@ exports.getMentorsByField = async (req, res, next) => {
 
 exports.getMentorsBySemester = asyncHandler(async (req, res) => {
   try {
-    if(!req.params.semester){
-      return res.status(400).json({message: "Semester parameter is required"});
+    const validSemesters = ['الشتاء', 'الصيف', 'الربيع', 'الخريف'];
+    
+    if (!req.params.semester || !validSemesters.includes(req.params.semester)) {
+      return res.status(400).json({ message: "Invalid or missing semester parameter" });
     }
+
     const mentors = await Mentor.find({}).select('name email birthdate');
     let filteredMentors = [];
 
-    for (let i = 0; i < mentors.length; i++) {
-      const element = mentors[i].birthdate;
-      const birthdate = new Date(element);
-      const day = birthdate.getDate();
+    for (const mentor of mentors) {
+      const birthdate = new Date(mentor.birthdate);
       const month = birthdate.getMonth() + 1;
+      const day = birthdate.getDate();
 
-      if (req.params.semester === 'spring') {
-        switch (month) {
-          case 3:
-            if (day >= 23) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-          case 4:
-          case 5:
-          case 6:
-            if (day <= 22) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-        }
-      } else if (req.params.semester === 'summer') {
-        switch (month) {
-          case 6:
-            if (day >= 23) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-          case 7:
-          case 8:
-          case 9:
-            if (day <= 22) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-        }
-      } else if (req.params.semester === 'winter') {
-        switch (month) {
-          case 12:
-            if (day >= 23) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-          case 1:
-          case 2:
-          case 3:
-            if (day <= 22) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-        }
-      } else if (req.params.semester === 'fall') {
-        switch (month) {
-          case 9:
-            if (day >= 23) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-          case 10:
-          case 11:
-          case 12:
-            if (day <= 22) {
-              filteredMentors.push(mentors[i]);
-            }
-            break;
-        }
-      } else {
-        return res.status(404).json({ message: 'Invalid semester provided' });
+      switch (req.params.semester) {
+        case 'الربيع':
+          if ((month === 3 && day >= 23) || (month >= 4 && month <= 6) || (month === 6 && day <=22)) {
+            filteredMentors.push(mentor);
+          }
+          break;
+        case 'الصيف':
+          if ((month === 6 && day >= 23) || (month >= 7 && month <= 9) || (month === 9 && day <=22)) {
+            filteredMentors.push(mentor);
+          }
+          break;
+        case 'الشتاء':
+          if ((month === 12 && day >= 23) || (month >= 1 && month <= 3) || (month === 3 && day <=22)) {
+            filteredMentors.push(mentor);
+          }
+          break;
+        case 'الخريف':
+          if ((month === 9 && day >= 23) || (month >= 10 && month <= 11) || (month === 12 && day <=22)) {
+            filteredMentors.push(mentor);
+          }
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid semester provided' });
       }
     }
 
@@ -181,10 +144,10 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({ message: 'Mentors retrieved successfully', length: filteredMentors.length, mentors: filteredMentors });
-    filteredMentors = [];
   } catch (error) {
     console.error('Error fetching mentors:', error);
     res.status(500).json({ message: 'Error fetching mentors' });
   }
 });
+
 

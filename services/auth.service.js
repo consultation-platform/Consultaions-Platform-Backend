@@ -270,7 +270,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 6) Check if it's a mentor and if the account is accepted
     if (mentor && !mentor.accepted) {
-      return next(new ApiError("Your account has not been accepted yet", 401));
+      return next(new ApiError("جاري مراجعة بيانات حسابك من قبل إدارة الموقع , برجاء محاولة تسجيل الدخول مرة أخري في وقت لاحق", 401));
     }
 
     // 7) Check if the password is correct
