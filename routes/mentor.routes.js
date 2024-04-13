@@ -35,6 +35,6 @@ router.get("/active", getAllActiveMentors);
 router.get("/field", getMentorsByField);
 router.get("/semester/:semester", getMentorsBySemester);
 
-// router.get("/:id", protect, allowedTo("manager", "admin"), getMentorById);
+router.get("/:id", getMentorById);
 
 module.exports = router;
