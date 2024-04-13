@@ -99,13 +99,15 @@ exports.getMentorsByField = async (req, res, next) => {
 
 exports.getMentorsBySemester = asyncHandler(async (req, res) => {
   try {
-    const validSemesters = ['winter', 'summer', 'spring', 'fall'];
-    
+    const validSemesters = ["winter", "summer", "spring", "fall"];
+
     if (!req.params.semester || !validSemesters.includes(req.params.semester)) {
-      return res.status(400).json({ message: "Invalid or missing semester parameter" });
+      return res
+        .status(400)
+        .json({ message: "Invalid or missing semester parameter" });
     }
 
-    const mentors = await Mentor.find({}).select('name email birthdate');
+    const mentors = await Mentor.find({}).select("name email image birthdate");
     let filteredMentors = [];
 
     for (const mentor of mentors) {
@@ -114,40 +116,61 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
       const day = birthdate.getDate();
 
       switch (req.params.semester) {
-        case 'spring':
-          if ((month === 3 && day >= 23) || (month >= 4 && month <= 6) || (month === 6 && day <=22)) {
+        case "spring":
+          if (
+            (month === 3 && day >= 23) ||
+            (month >= 4 && month <= 6) ||
+            (month === 6 && day <= 22)
+          ) {
             filteredMentors.push(mentor);
           }
           break;
-        case 'summer':
-          if ((month === 6 && day >= 23) || (month >= 7 && month <= 9) || (month === 9 && day <=22)) {
+        case "summer":
+          if (
+            (month === 6 && day >= 23) ||
+            (month >= 7 && month <= 9) ||
+            (month === 9 && day <= 22)
+          ) {
             filteredMentors.push(mentor);
           }
           break;
-        case 'winter':
-          if ((month === 12 && day >= 23) || (month >= 1 && month <= 3) || (month === 3 && day <=22)) {
+        case "winter":
+          if (
+            (month === 12 && day >= 23) ||
+            (month >= 1 && month <= 3) ||
+            (month === 3 && day <= 22)
+          ) {
             filteredMentors.push(mentor);
           }
           break;
-        case 'fall':
-          if ((month === 9 && day >= 23) || (month >= 10 && month <= 11) || (month === 12 && day <=22)) {
+        case "fall":
+          if (
+            (month === 9 && day >= 23) ||
+            (month >= 10 && month <= 11) ||
+            (month === 12 && day <= 22)
+          ) {
             filteredMentors.push(mentor);
           }
           break;
         default:
-          return res.status(400).json({ message: 'Invalid semester provided' });
+          return res.status(400).json({ message: "Invalid semester provided" });
       }
     }
 
     if (filteredMentors.length === 0) {
-      return res.status(404).json({ message: 'No mentors found in the specified date range for the provided semester' });
+      return res.status(404).json({
+        message:
+          "No mentors found in the specified date range for the provided semester",
+      });
     }
 
-    res.status(200).json({ message: 'Mentors retrieved successfully', length: filteredMentors.length, mentors: filteredMentors });
+    res.status(200).json({
+      message: "Mentors retrieved successfully",
+      length: filteredMentors.length,
+      mentors: filteredMentors,
+    });
   } catch (error) {
-    console.error('Error fetching mentors:', error);
-    res.status(500).json({ message: 'Error fetching mentors' });
+    console.error("Error fetching mentors:", error);
+    res.status(500).json({ message: "Error fetching mentors" });
   }
 });
-
-
