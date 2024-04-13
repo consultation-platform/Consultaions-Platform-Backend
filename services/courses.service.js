@@ -73,6 +73,14 @@ exports.getAllCoursesForField = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllCoursesForMentor = asyncHandler(async (req, res, next) => {
+  const mentor = await Mentor.findOne(req.params.mentor);
+  if (!mentor) {
+    return next(
+      new ApiError(
+        `The mentor ${req.params.mentor} was not found in the database`
+      )
+    );
+  }
   const courses = await Course.find({
     mentor: req.params.mentor,
     isActive: true,
