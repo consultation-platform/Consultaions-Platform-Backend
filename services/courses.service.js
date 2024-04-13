@@ -74,7 +74,7 @@ exports.getAllCoursesForField = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllCoursesForMentor = asyncHandler(async (req, res, next) => {
-  const mentor = await Mentor.findOne(req.params.mentor);
+  const mentor = await Mentor.findById(req.params.mentor);
   if (!mentor) {
     return next(
       new ApiError(
