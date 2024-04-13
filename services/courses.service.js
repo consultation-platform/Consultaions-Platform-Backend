@@ -83,8 +83,7 @@ exports.getAllCoursesForMentor = asyncHandler(async (req, res, next) => {
     );
   }
   const courses = await Course.find({
-    mentor: req.params.mentor,
-    isActive: true,
+    owner: req.params.mentor,
   });
   if (!courses) {
     return next(
