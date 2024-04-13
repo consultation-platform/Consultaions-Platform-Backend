@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
 const { uploadSingleImage } = require("../middlewares/uploadImages");
 const Course = require("../models/course.model");
+const Mentor = require("../models/mentor.model");
 const factory = require("./handlers.factory");
 
 exports.uploadCourseImage = uploadSingleImage("image");
