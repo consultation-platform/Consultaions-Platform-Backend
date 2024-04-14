@@ -68,6 +68,9 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
 exports.getAllComments = asyncHandler(async (req, res, next) => {
   const comments = await Comment.find({
     course: req.params.id,
+  }).populate({
+    path: "replies",
+    select: "text",
   });
   if (!comments) {
     return next(
