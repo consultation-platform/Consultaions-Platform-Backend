@@ -67,6 +67,7 @@ const mentorSchema = new mongoose.Schema(
     desciption: String,
     field: String,
     hourePrice: Number,
+    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course", }]
   },
   { timestamps: true }
 );

@@ -7,21 +7,27 @@ const factory = require("./handlers.factory");
 
 exports.uploadCourseImage = uploadSingleImage("image");
 
-exports.createCourse = async (req, res) => {
+const createCourse = async (req, res) => {
   try {
-    const document = new Course(req.body);
-    document.owner = req.user.id;
-    document.field = req.user.field;
-    await document.save();
-    res.status(201).json({ message: "created successfully", document });
+    const { body, user } = req;
+    const newCourse = new Course(body);
+    newCourse.owner = user.id;
+    newCourse.field = user.field;
+    await newCourse.save();
+    await Mentor.findByIdAndUpdate(
+      user.id,
+      { $push: { courses: newCourse._id } },
+      { new: true }
+    );
+    res.status(201).json({ message: "Course created successfully", course: newCourse });
   } catch (error) {
-    console.error("Error occurred while creating:", error);
-    res.status(500).json({
-      error: "Error occurred while creating",
-      details: error.message,
-    });
+    console.error("Error occurred while creating course:", error);
+    res.status(500).json({ error: "Failed to create course", details: error.message });
   }
 };
+
+exports.createCourse = createCourse;
+
 exports.updateCourse = factory.updateOne(Course);
 
 exports.deleteCourse = factory.deleteOne(Course);
