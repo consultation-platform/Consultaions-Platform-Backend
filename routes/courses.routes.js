@@ -11,6 +11,12 @@ const {
   getAllCoursesForField,
   getAllCoursesForMentor,
   getLoggedMentorCourses,
+  coursePaymentSession,
+  checkoutPayment,
+  getCourseRequestById,
+  deleteCourseRequest,
+  getAllCourseRequests,
+  checksubscribed,
 } = require("../services/courses.service");
 const { saveSingleImage } = require("../middlewares/imageProcessing");
 const { protect, allowedTo } = require("../services/auth.service");
@@ -26,6 +32,9 @@ router.post(
   saveSingleImage,
   createCourse
 );
+router.post("/payment/:id", protect, coursePaymentSession);
+
+router.post("/checkout/:id", protect, checkoutPayment);
 
 // Get all tickets for field
 router.get("/field/:field", getAllCoursesForField);
@@ -36,7 +45,13 @@ router.get("/mentor/:mentor", getAllCoursesForMentor);
 // Get all tickets for logged mentor
 router.get("/my-courses", protect, getLoggedMentorCourses);
 
-router.get("/:id", getCourseById);
+router.get("/request", protect, getAllCourseRequests);
+
+router.get("/request/:id", protect, getCourseRequestById);
+
+router.delete("/request/:id", protect, deleteCourseRequest);
+
+router.get("/:id", protect, checksubscribed, getCourseById);
 
 router.put("/:id", protect, checkOwner, uploadCourseImage, updateCourse);
 

@@ -46,6 +46,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+    consultaions: [{ type: mongoose.Schema.Types.ObjectId, ref: "ConsultationTicket" }],
 
     address: {
       type: String,

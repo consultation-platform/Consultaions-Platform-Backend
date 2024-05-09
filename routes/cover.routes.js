@@ -4,8 +4,6 @@ const router = express.Router();
 const {             
     createCover,
     getAllCovers,
-    getCoverById,
-    deleteCover,
     updateCover,
     uploadCoverImage
 } = require("../services/cover.service");

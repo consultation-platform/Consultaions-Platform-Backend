@@ -5,12 +5,11 @@ const bcrypt = require("bcryptjs");
 
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
-const sendEmail = require("../utils/send.email");
+const sendEmail = require("../utils/sendEmail");
 const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 const Mentor = require("../models/mentor.model");
 const { uploadSingleImage } = require("../middlewares/uploadImages");
-
 
 exports.uploadProfileImage = uploadSingleImage("image");
 
@@ -42,17 +41,15 @@ exports.signup = asyncHandler(async (req, res, next) => {
   await user.save();
 
   // 3- Send the verification code via SMS
-  const message = `Hi ${user.name},
-  \n Welcome to Sayees! Please use the following verification code to activate your account:
-  \n ${verificationCode} \n
-  \n Thanks for joining us!
-  \n The Sayees Team`;
+  const message = `Welcome to Sayees! Please use the provided verification code to activate your account`;
 
   try {
     await sendEmail({
       email: user.email,
       subject: "Your Email Verification Code (valid for 10 min)",
       message,
+      user: user.name,
+      code: verificationCode,
     });
   } catch (err) {
     console.error(err);
@@ -98,17 +95,15 @@ exports.signupMentor = asyncHandler(async (req, res, next) => {
   await mentor.save();
 
   // 3- Send the verification code via SMS
-  const message = `Hi ${req.body.name},
-  \n Welcome to Sayees! Please use the following verification code to activate your account:
-  \n ${verificationCode} \n
-  \n Thanks for joining us!
-  \n The Sayees Team`;
+  const message = `Welcome to Sayees! Please use the provided verification code to activate your account`;
 
   try {
     await sendEmail({
       email: mentor.email,
       subject: "Your Email Verification Code (valid for 10 min)",
       message,
+      user: mentor.name,
+      code: verificationCode,
     });
   } catch (err) {
     console.error(err);
@@ -193,17 +188,15 @@ exports.resendVerificationCode = asyncHandler(async (req, res, next) => {
     await user.save();
 
     // 5) Send the new verification code via email
-    const message = `Hi ${user.name},
-      \n You requested a new verification code for your Sayees account. Here it is:
-      \n ${verificationCode} \n
-      \n Thank you!
-      \n The Sayees Team`;
+    const message = `You requested a new verification code for your Sayees account.`;
 
     try {
       await sendEmail({
         email: user.email,
         subject: "Your Email Verify code (valid for 10 min)",
-        message,
+        message: message,
+        user: user.name,
+        code: verificationCode,
       });
     } catch (err) {
       console.error(err);
@@ -270,7 +263,12 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 6) Check if it's a mentor and if the account is accepted
     if (mentor && !mentor.accepted) {
-      return next(new ApiError("جاري مراجعة بيانات حسابك من قبل إدارة الموقع , برجاء محاولة تسجيل الدخول مرة أخري في وقت لاحق", 401));
+      return next(
+        new ApiError(
+          "جاري مراجعة بيانات حسابك من قبل إدارة الموقع , برجاء محاولة تسجيل الدخول مرة أخري في وقت لاحق",
+          401
+        )
+      );
     }
 
     // 7) Check if the password is correct
@@ -296,12 +294,12 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 10) Extract specific properties from the user object
     const userData = user
-      ? { 
-        _id: user._id,
-         name: user.name,
-         email: user.email, 
-         role: user.role,
-         image: user.image
+      ? {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          image: user.image,
         }
       : {
           _id: mentor._id,
@@ -448,18 +446,18 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   // Send the reset code via email
-  const message = `Hi ${user.name},
-\n You recently requested to reset your password on Sayees. Please use the following code to reset your password:
-\n ${resetCode} \n
-\n If you didn't make this request, you can safely ignore this email.
-\n Thanks,
-\n The Sayees Team`;
+  const message = `
+You recently requested to reset your password on Sayees. Please use the following code to reset your password
+If you didn't make this request, you can safely ignore this email.
+`;
 
   try {
     await sendEmail({
       email: user.email,
       subject: "Your password reset code (valid for 10 min)",
       message,
+      code: resetCode,
+      user: user.name,
     });
   } catch (err) {
     // If there's an error sending the email, clean up the user's reset data

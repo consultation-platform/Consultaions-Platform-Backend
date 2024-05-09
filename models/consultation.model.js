@@ -24,7 +24,6 @@ const consultationTicketSchema = new mongoose.Schema(
     },
     field: {
       type: String,
-      // required: true,
       trim: true,
     },
   },

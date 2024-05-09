@@ -8,6 +8,11 @@ const {
   getAllTicketsForMentor,
   deleteTicket,
   getLoggedMentorTickets,
+  consultaionPaymentSession,
+  consultationCheckout,
+  getConsultRequestById,
+  getAllConsultRequests,
+  deleteConsultRequestById,
 } = require("../services/tickets.service");
 
 // const {
@@ -29,6 +34,16 @@ router.get("/mentor/:mentor", getAllTicketsForMentor);
 
 // Get all tickets for logged mentor
 router.get("/my-tickets", protect, getLoggedMentorTickets);
+
+router.post("/payment/:id", protect, consultaionPaymentSession);
+
+router.post("/checkout/:id", protect, consultationCheckout);
+
+router.get("/request", getAllConsultRequests);
+
+router.get("/request/:id", protect, getConsultRequestById);
+
+router.get("/request/:id", protect, deleteConsultRequestById);
 
 // Get ticket by id
 router.get("/:id", getTicketById);

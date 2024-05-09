@@ -18,7 +18,7 @@ exports.unActivateMentor = asyncHandler(async (req, res, next) => {
 exports.acceptmentor = asyncHandler(async (req, res, next) => {
   const mentor = await Mentor.findByIdAndUpdate(
     req.params.id,
-    { accepted: true },
+    { accepted: true, fees: req.body.fees },
     { new: true }
   );
 

@@ -11,7 +11,7 @@ const dbConnection = require("./configs/db.config");
 
 //ROUTES
 const userRoutes = require("./routes/user.routes");
-const consFieldsRoutes = require("./routes/cons.fields.route");
+const consFieldsRoutes = require("./routes/cons.fields.routes");
 const authRoutes = require("./routes/auth.routes");
 const contactUsRoutes = require("./routes/contactUs.routes");
 const mentorsRoutes = require("./routes/mentor.routes");
@@ -21,10 +21,10 @@ const videosRoutes = require("./routes/video.routes.js");
 const consTicketRoutes = require("./routes/cons.tickets.routes.js");
 const questionRoutes = require("./routes/question.routes.js");
 const commentRoutes = require("./routes/comments.routes.js");
-const repliesRoutes = require("./routes/replies.route.js");
+const repliesRoutes = require("./routes/replies.routes.js");
 const coverRoutes = require("./routes/cover.routes.js");
 const toolsRoutes = require("./routes/tools.routes.js");
-
+const aboutUsRoutes = require("./routes/about-us.routes.js");
 app.use(express.json());
 app.use(cookieParser());
 
@@ -67,6 +67,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/replies", repliesRoutes);
 app.use("/api/cover", coverRoutes);
 app.use("/api/tools", toolsRoutes);
+app.use("/api/about-us", aboutUsRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

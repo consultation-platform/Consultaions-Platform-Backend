@@ -42,6 +42,12 @@ const mentorSchema = new mongoose.Schema(
       enum: ["user", "mentor", "manager"],
       default: "mentor",
     },
+    fees: {
+      type: Number,
+      default: 0,
+      minlength: 0,
+      maxlength: 100,
+    },
     active: {
       type: Boolean,
       default: false,
@@ -67,7 +73,11 @@ const mentorSchema = new mongoose.Schema(
     desciption: String,
     field: String,
     hourePrice: Number,
-    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course", }]
+    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+    balance: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
