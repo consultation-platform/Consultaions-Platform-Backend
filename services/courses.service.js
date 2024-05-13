@@ -180,6 +180,8 @@ exports.coursePaymentSession = async (req, res, next) => {
       // return next(new ApiError("You already own this course", 401));
     }
     const data = {
+      success_url: process.env.success_course_url,
+      back_url: process.env.fail_payment_url,
       amount: course.price * 100,
       currency: "SAR",
       description: `Course Payment from ${req.user.name}`,

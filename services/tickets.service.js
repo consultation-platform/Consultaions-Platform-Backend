@@ -102,7 +102,8 @@ exports.getConsultRequestById = asyncHandler(async (req, res, next) => {
       req.params.id
     ).populate({
       path: "user ticket mentor",
-      select: "title name phone email price day field owner price birthdate owner",
+      select:
+        "title name phone email price day field owner price birthdate owner",
     });
     if (!consultRequest) {
       return next(
@@ -133,6 +134,8 @@ exports.consultaionPaymentSession = async (req, res, next) => {
       );
     }
     const data = {
+      success_url: process.env.success_consultaion_url,
+      back_url: process.env.fail_payment_url,
       amount: consultaion.price * 100,
       currency: "SAR",
       description: `Cousultation Payment from ${req.user.name}`,
