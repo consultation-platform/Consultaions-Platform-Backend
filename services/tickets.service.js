@@ -164,7 +164,7 @@ exports.consultationCheckout = async (req, res) => {
     if (response.data.status === "paid") {
       const payment = await Payments.findOne({ refId: response.data.id });
       if (payment) {
-        // return res.status(401).json({ message: "Expired payment token" });
+        return res.status(401).json({ message: "Expired payment token" });
       }
       const paymentid = new Payments({
         refId: response.data.id,

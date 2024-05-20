@@ -177,7 +177,7 @@ exports.coursePaymentSession = async (req, res, next) => {
         .map((user) => user.toString())
         .includes(req.user.id)
     ) {
-      // return next(new ApiError("You already own this course", 401));
+      return next(new ApiError("You already own this course", 401));
     }
     const data = {
       success_url: process.env.success_course_url,
@@ -212,7 +212,7 @@ exports.checkoutPayment = async (req, res, next) => {
         refId: response.data.id,
       });
       if (payment) {
-        // return next(new ApiError("expired payment token", 401));
+        return next(new ApiError("expired payment token", 401));
       }
       const paymentid = new Payments({
         refId: response.data.id,
