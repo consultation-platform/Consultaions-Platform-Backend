@@ -72,15 +72,11 @@ exports.getAllNotActiveMentors = asyncHandler(async (req, res, next) => {
 
 exports.getMentorsByField = async (req, res, next) => {
   try {
-    // Extract the field value from the query parameters
     const field = req.query.field;
 
-    // Check if the field parameter is provided
     if (!field) {
       return res.status(400).json({ message: "Field parameter is required" });
     }
-
-    // Find mentors by the provided field
     const mentors = await Mentor.find({ field }).select(
       "name phone email field image"
     );
@@ -187,7 +183,7 @@ exports.depositeRequest = asyncHandler(async (req, res, next) => {
     );
   }
   const depositeRequest = new DepositeRequest({
-    user: req.user,
+    mentor: req.user,
     equity: equity,
   });
   await depositeRequest.save();
@@ -208,7 +204,12 @@ exports.getNotAcceptedDepostes = asyncHandler(async (req, res) => {
   res.status(200).json({ data: notAccepted });
 });
 exports.getDeposteRequestByID = asyncHandler(async (req, res) => {
-  const deposteRequest = await DepositeRequest.findById(req.params.id);
+  const deposteRequest = await DepositeRequest.findById(req.params.id).populate(
+    {
+      path: "mentor",
+      select: "name email address email phone balance fees socilaMedia ",
+    }
+  );
   if (!deposteRequest) {
     return next(
       new ApiError(`No deposteRequest found for ID ${req.params.id}`, 404)

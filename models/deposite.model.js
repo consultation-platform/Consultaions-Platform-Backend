@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const depositeRequestSchema = new mongoose.Schema(
   {
-    user: {
+    mentor: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Mentor",
       required: true,
     },
     equity: {
