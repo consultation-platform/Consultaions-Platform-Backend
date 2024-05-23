@@ -1,6 +1,7 @@
 const Mentor = require("../models/mentor.model");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
+const DepositeRequest = require("../models/deposite.model");
 
 exports.unActivateMentor = asyncHandler(async (req, res, next) => {
   const mentor = await Mentor.findByIdAndUpdate(
@@ -173,4 +174,71 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
     console.error("Error fetching mentors:", error);
     res.status(500).json({ message: "Error fetching mentors" });
   }
+});
+
+exports.depositeRequest = asyncHandler(async (req, res, next) => {
+  const { equity } = req.body;
+  if (req.user.balance < equity) {
+    return next(
+      new ApiError(
+        `insufficient balance , your current balance is${req.user.balance}`,
+        401
+      )
+    );
+  }
+  const depositeRequest = new DepositeRequest({
+    user: req.user,
+    equity: equity,
+  });
+  await depositeRequest.save();
+
+  res.status(200).json({
+    message: `Deposite request saved successfully`,
+    depositeRequest: depositeRequest,
+  });
+});
+
+exports.getAcceptedDepostes = asyncHandler(async (req, res) => {
+  const accepted = await DepositeRequest.find({ accepted: true });
+  res.status(200).json({ data: accepted });
+});
+
+exports.getNotAcceptedDepostes = asyncHandler(async (req, res) => {
+  const notAccepted = await DepositeRequest.find({ accepted: false });
+  res.status(200).json({ data: notAccepted });
+});
+exports.getDeposteRequestByID = asyncHandler(async (req, res) => {
+  const deposteRequest = await DepositeRequest.findById(req.params.id);
+  if (!deposteRequest) {
+    return next(
+      new ApiError(`No deposteRequest found for ID ${req.params.id}`, 404)
+    );
+  }
+  res.status(200).json({ data: deposteRequest });
+});
+
+exports.acceptDepositRequest = asyncHandler(async (req, res, next) => {
+  const depositRequest = await DepositeRequest.findByIdAndUpdate(
+    req.params.id,
+    { accepted: true },
+    { new: true }
+  );
+
+  if (!depositRequest) {
+    return next(
+      new ApiError(`No deposit request found for ID ${req.params.id}`, 404)
+    );
+  }
+
+  const mentor = await Mentor.findById(depositRequest.user);
+  if (!mentor) {
+    return next(
+      new ApiError(`No mentor found for ID ${depositRequest.user}`, 404)
+    );
+  }
+
+  mentor.balance = mentor.balance - depositRequest.equity;
+  await mentor.save();
+
+  res.status(200).json({ data: depositRequest, mentorBalance: mentor.balance });
 });

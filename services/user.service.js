@@ -6,13 +6,9 @@ const User = require("../models/user.model");
 const Mentor = require("../models/mentor.model");
 const { uploadSingleImage } = require("../middlewares/uploadImages");
 
-
 exports.uploadProfileImage = uploadSingleImage("image");
 exports.uploadPlaylistImage = uploadSingleImage("image");
 
-// @desc    Get list of users
-// @route   GET /api/users
-// @access  Private/Admin
 exports.getUsers = asyncHandler(async (req, res, next) => {
   const document = await User.find({}).select("name email phone role ");
   if (!document) next(new ApiError(`Error Happend `, 404));
@@ -27,9 +23,6 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Get specific user by id
-// @route   GET /api/users/:id
-// @access  Private/Admin
 exports.getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user)
@@ -54,9 +47,6 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update specific user role
-// @route   PUT /api/users/:id
-// @access  Private/Admin
 exports.updateUserRole = asyncHandler(async (req, res, next) => {
   const document = await User.findByIdAndUpdate(
     req.params.id,
@@ -74,9 +64,6 @@ exports.updateUserRole = asyncHandler(async (req, res, next) => {
   res.status(201).json({ data: document });
 });
 
-// @desc    Get Logged user data
-// @route   GET /api/users/getMe
-// @access  Private/Protect
 exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
   if (!req.user) {
     return next(new ApiError("You are not logged in ", 401));
@@ -84,9 +71,6 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
   res.status(200).json(req.user);
 });
 
-// @desc    Update logged user password
-// @route   PUT /api/users/updateMyPassword
-// @access  Private/Protect
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   let Model;
   if (req.user.role === "mentor") {
@@ -112,9 +96,6 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   res.status(201).json({ data: user, token });
 });
 
-// @desc    Update logged user data (without password, role)
-// @route   PUT /api/users/updateMe
-// @access  Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   let Model;
   if (req.user.role === "mentor") {
@@ -128,7 +109,7 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
-      image:req.body.image,
+      image: req.body.image,
     },
     { new: true }
   );

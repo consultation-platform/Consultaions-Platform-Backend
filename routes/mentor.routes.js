@@ -9,7 +9,11 @@ const {
   getAllNotActiveMentors,
   getMentorsByField,
   getMentorsBySemester,
-  getMentorsByBirthdate,
+  depositeRequest,
+  getAcceptedDepostes,
+  getNotAcceptedDepostes,
+  getDeposteRequestByID,
+  acceptDepositRequest,
 } = require("../services/mentor.service");
 const { allowedTo, protect } = require("../services/auth.service");
 
@@ -31,6 +35,34 @@ router.post(
   allowedTo("manager", "admin"),
   acceptmentor
 );
+
+//deposite request
+router.post("/deposite-request", protect, allowedTo("mentor"), depositeRequest);
+router.post(
+  "/accept-deposite/:id",
+  protect,
+  allowedTo("manager"),
+  acceptDepositRequest
+);
+router.get(
+  "/deposite-request/:id",
+  protect,
+  allowedTo("manager"),
+  getDeposteRequestByID
+);
+router.get(
+  "/accepted-deposites",
+  protect,
+  allowedTo("manager"),
+  getAcceptedDepostes
+);
+router.get(
+  "/pending-deposites",
+  protect,
+  allowedTo("manager"),
+  getNotAcceptedDepostes
+);
+///////////
 router.get("/active", getAllActiveMentors);
 router.get("/field", getMentorsByField);
 router.get("/semester/:semester", getMentorsBySemester);
