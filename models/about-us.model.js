@@ -10,14 +10,6 @@ const aboutUsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    text3: {
-      type: String,
-      required: true,
-    },
-    text4: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );

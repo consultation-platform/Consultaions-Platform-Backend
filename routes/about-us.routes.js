@@ -1,5 +1,10 @@
 const express = require("express");
-const { getAll, update, create } = require("../services/about-us.service");
+const {
+  getAll,
+  update,
+  create,
+  deleteItem,
+} = require("../services/about-us.service");
 const { protect, allowedTo } = require("../services/auth.service");
 const router = express.Router();
 
@@ -11,5 +16,8 @@ router.get("/", getAll);
 
 // update routes
 router.put("/:id", protect, allowedTo("manager"), update);
+
+// delete routes
+router.delete("/:id", protect, allowedTo("manager"), deleteItem);
 
 module.exports = router;

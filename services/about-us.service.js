@@ -8,7 +8,7 @@ exports.getById = factory.getOne(AboutUs);
 
 exports.update = factory.updateOne(AboutUs);
 
-exports.delete = factory.deleteOne(AboutUs);
+exports.deleteItem = factory.deleteOne(AboutUs);
 
 exports.getAll = expressAsyncHandler(async (req, res, next) => {
   const document = await AboutUs.find();
