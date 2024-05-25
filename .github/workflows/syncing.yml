@@ -1,0 +1,26 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'  # Runs every hour, adjust as needed
+  workflow_dispatch:
+    # Allows manual triggering of the workflow
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the target repository
+      uses: actions/checkout@v2
+      with:
+        repository: Mohmed-saleh1/Consultaions-Platform  # Replace with your repository
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        fetch-depth: 0
+
+    - name: Push changes to the fork
+      run: |
+        git remote add fork https://github.com/consultation-platform/Consultaions-Platform-Backend.git
+        git push fork main --force
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
