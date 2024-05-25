@@ -17,7 +17,7 @@ router.get("/", getAll);
 // update routes
 router.put("/:id", protect, allowedTo("manager"), update);
 
-// delete routes
+// delete routess
 router.delete("/:id", protect, allowedTo("manager"), deleteItem);
 
 module.exports = router;
