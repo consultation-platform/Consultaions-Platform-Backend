@@ -2,7 +2,7 @@ name: Sync Fork
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # Runs every hour, adjust as needed
+    - cron: '*/1 * * * *'  
   workflow_dispatch:
     # Allows manual triggering of the workflow
 
@@ -14,7 +14,7 @@ jobs:
     - name: Checkout the target repository
       uses: actions/checkout@v2
       with:
-        repository: Mohmed-saleh1/Consultaions-Platform  # Replace with your repository
+        repository: https://github.com/Mohmed-saleh1/Consultaions-Platform  # Replace with your repository
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         fetch-depth: 0
 
