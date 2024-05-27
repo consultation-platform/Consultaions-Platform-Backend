@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: '*/1 * * * *'  
   workflow_dispatch:
-    # Allows manual triggering of the workflow
 
 jobs:
   sync:
@@ -14,13 +13,14 @@ jobs:
     - name: Checkout the target repository
       uses: actions/checkout@v2
       with:
-        repository: https://github.com/Mohmed-saleh1/Consultaions-Platform  # Replace with your repository
+        repository: Mohmed-saleh1/Consultaions-Platform
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         fetch-depth: 0
 
-    - name: Push changes to the fork
+    - name: Add fork repository as remote
       run: |
         git remote add fork https://github.com/consultation-platform/Consultaions-Platform-Backend.git
-        git push fork main --force
+        git fetch origin
+        git push fork +refs/remotes/origin/*:refs/heads/* --force
       env:
         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
