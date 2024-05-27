@@ -224,17 +224,16 @@ exports.acceptDepositRequest = asyncHandler(async (req, res, next) => {
     { accepted: true },
     { new: true }
   );
-
   if (!depositRequest) {
     return next(
       new ApiError(`No deposit request found for ID ${req.params.id}`, 404)
     );
   }
 
-  const mentor = await Mentor.findById(depositRequest.user);
+  const mentor = await Mentor.findById(depositRequest.mentor);
   if (!mentor) {
     return next(
-      new ApiError(`No mentor found for ID ${depositRequest.user}`, 404)
+      new ApiError(`No mentor found for ID ${depositRequest.mentor}`, 404)
     );
   }
 
