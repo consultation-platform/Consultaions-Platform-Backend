@@ -72,12 +72,11 @@ exports.getAllNotActiveMentors = asyncHandler(async (req, res, next) => {
 
 exports.getMentorsByField = async (req, res, next) => {
   try {
-    const field = req.query.field;
-
-    if (!field) {
-      return res.status(400).json({ message: "Field parameter is required" });
+    let filterObject = {};
+    if (req.query.field) {
+      filterObject.field = req.query.field;
     }
-    const mentors = await Mentor.find({ field }).select(
+    const mentors = await Mentor.find(filterObject).select(
       "name phone email field image"
     );
 

@@ -119,14 +119,16 @@ exports.getLoggedMentorCourses = asyncHandler(async (req, res, next) => {
 
 exports.getAllCoursesForField = asyncHandler(async (req, res, next) => {
   try {
-    const courses = await Course.find({
-      field: req.params.field,
-    });
+    let filterObj = {};
+    if (req.query.field) {
+      filterObj.field = req.query.field;
+    }
+    const courses = await Course.find(filterObj);
 
     // Check if courses array is empty
     if (courses.length === 0) {
       return next(
-        new ApiError(`No courses found for field ${req.params.field}`)
+        new ApiError(`No courses found for field ${req.query.field}`)
       );
     }
 

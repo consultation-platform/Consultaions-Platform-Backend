@@ -37,7 +37,7 @@ router.post("/payment/:id", protect, coursePaymentSession);
 router.post("/checkout/:id", protect, checkoutPayment);
 
 // Get all tickets for field
-router.get("/field/:field", getAllCoursesForField);
+router.get("/field", getAllCoursesForField);
 
 // Get all tickets for mentor
 router.get("/mentor/:mentor", getAllCoursesForMentor);
