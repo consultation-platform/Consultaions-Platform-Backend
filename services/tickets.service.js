@@ -29,17 +29,16 @@ exports.getTicketById = factory.getOne(ConsultationTicket);
 
 exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
   try {
-    const tickets = await ConsultationTicket.find({
-      field: req.params.field,
+    let filterObject = {
       isActive: true,
-    });
-
-    // Check if tickets array is empty
-    if (tickets.length === 0) {
-      return next(
-        new ApiError(`No tickets found for field ${req.params.field}`)
-      );
+    };
+    if (req.query.field) {
+      filterObject = {
+        field: req.query.field,
+        isActive: true,
+      };
     }
+    const tickets = await ConsultationTicket.find(filterObject);
 
     // Return tickets
     res.status(200).json({ length: tickets.length, data: tickets });

@@ -27,7 +27,7 @@ const { checkTicketOwner } = require("../middlewares/check.ticket.owner");
 router.post("/", protect, allowedTo("mentor", "manager"), createTicket);
 
 // Get all tickets for field
-router.get("/field/:field", getAllTicketsForField);
+router.get("/field", getAllTicketsForField);
 
 // Get all tickets for mentor
 router.get("/mentor/:mentor", getAllTicketsForMentor);
