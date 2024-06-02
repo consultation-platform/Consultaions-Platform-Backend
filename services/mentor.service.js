@@ -76,6 +76,9 @@ exports.getMentorsByField = async (req, res, next) => {
     if (req.query.field) {
       filterObject.field = req.query.field;
     }
+    if (req.query.field === "selectAll") {
+      filterObject = {};
+    }
     const mentors = await Mentor.find(filterObject).select(
       "name phone email field image"
     );

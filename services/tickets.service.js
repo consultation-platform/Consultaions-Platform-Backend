@@ -38,6 +38,11 @@ exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
         isActive: true,
       };
     }
+    if(req.query.field==="selectAll"){
+      filterObject = {
+        isActive: true,
+      };
+    }
     const tickets = await ConsultationTicket.find(filterObject);
 
     // Return tickets

@@ -120,8 +120,12 @@ exports.getLoggedMentorCourses = asyncHandler(async (req, res, next) => {
 exports.getAllCoursesForField = asyncHandler(async (req, res, next) => {
   try {
     let filterObj = {};
+
     if (req.query.field) {
       filterObj.field = req.query.field;
+    }
+    if (req.query.field === "selectAll") {
+      filterObj = {};
     }
     const courses = await Course.find(filterObj);
 
