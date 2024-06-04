@@ -82,13 +82,7 @@ exports.getMentorsByField = async (req, res, next) => {
     const mentors = await Mentor.find(filterObject).select(
       "name phone email field image"
     );
-
-    if (!mentors || mentors.length === 0) {
-      return res
-        .status(404)
-        .json({ message: `No mentors found for field '${field}'` });
-    }
-
+    
     res.status(200).json({ mentors });
   } catch (error) {
     console.error("Error retrieving mentors by field:", error);
@@ -100,12 +94,6 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
   try {
     const validSemesters = ["winter", "summer", "spring", "fall"];
 
-    if (!req.params.semester || !validSemesters.includes(req.params.semester)) {
-      return res
-        .status(400)
-        .json({ message: "Invalid or missing semester parameter" });
-    }
-
     const mentors = await Mentor.find({}).select("name email image birthdate");
     let filteredMentors = [];
 
@@ -114,7 +102,7 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
       const month = birthdate.getMonth() + 1;
       const day = birthdate.getDate();
 
-      switch (req.params.semester) {
+      switch (req.query.semester) {
         case "spring":
           if (
             (month === 3 && day >= 23) ||
@@ -152,7 +140,7 @@ exports.getMentorsBySemester = asyncHandler(async (req, res) => {
           }
           break;
         default:
-          return res.status(400).json({ message: "Invalid semester provided" });
+          return res.status(200).json({ mentors: filteredMentors });
       }
     }
 
@@ -206,15 +194,13 @@ exports.getNotAcceptedDepostes = asyncHandler(async (req, res) => {
   res.status(200).json({ data: notAccepted });
 });
 exports.getDeposteRequestByID = asyncHandler(async (req, res) => {
-  const deposteRequest = await DepositeRequest.findById(req.params.id).populate(
-    {
-      path: "mentor",
-      select: "name email address email phone balance fees socilaMedia ",
-    }
-  );
+  const deposteRequest = await DepositeRequest.findById(req.query.id).populate({
+    path: "mentor",
+    select: "name email address email phone balance fees socilaMedia ",
+  });
   if (!deposteRequest) {
     return next(
-      new ApiError(`No deposteRequest found for ID ${req.params.id}`, 404)
+      new ApiError(`No deposteRequest found for ID ${req.query.id}`, 404)
     );
   }
   res.status(200).json({ data: deposteRequest });
@@ -222,13 +208,13 @@ exports.getDeposteRequestByID = asyncHandler(async (req, res) => {
 
 exports.acceptDepositRequest = asyncHandler(async (req, res, next) => {
   const depositRequest = await DepositeRequest.findByIdAndUpdate(
-    req.params.id,
+    req.query.id,
     { accepted: true },
     { new: true }
   );
   if (!depositRequest) {
     return next(
-      new ApiError(`No deposit request found for ID ${req.params.id}`, 404)
+      new ApiError(`No deposit request found for ID ${req.query.id}`, 404)
     );
   }
 

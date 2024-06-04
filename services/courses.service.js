@@ -129,13 +129,6 @@ exports.getAllCoursesForField = asyncHandler(async (req, res, next) => {
     }
     const courses = await Course.find(filterObj);
 
-    // Check if courses array is empty
-    if (courses.length === 0) {
-      return next(
-        new ApiError(`No courses found for field ${req.query.field}`)
-      );
-    }
-
     // Return courses
     res.status(200).json({ length: courses.length, data: courses });
   } catch (error) {

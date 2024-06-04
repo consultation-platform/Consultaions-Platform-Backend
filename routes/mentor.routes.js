@@ -65,7 +65,7 @@ router.get(
 ///////////
 router.get("/active", getAllActiveMentors);
 router.get("/field", getMentorsByField);
-router.get("/semester/:semester", getMentorsBySemester);
+router.get("/semester", getMentorsBySemester);
 
 router.get("/:id", getMentorById);
 
