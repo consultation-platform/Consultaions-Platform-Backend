@@ -13,6 +13,7 @@ const {
   getConsultRequestById,
   getAllConsultRequests,
   deleteConsultRequestById,
+  getLoggedMentorRequests,
 } = require("../services/tickets.service");
 
 // const {
@@ -39,7 +40,15 @@ router.post("/payment/:id", protect, consultaionPaymentSession);
 
 router.post("/checkout/:id", protect, consultationCheckout);
 
+router.get("/request/my-requests", protect, getLoggedMentorRequests);
+
 router.get("/request", getAllConsultRequests);
+
+router.delete(
+  "/request/:id",
+  protect,
+  deleteConsultRequestById
+);
 
 router.get("/request/:id", protect, getConsultRequestById);
 

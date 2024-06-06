@@ -17,15 +17,12 @@ const consultationRequestSchema = new mongoose.Schema({
     ref: "Mentor",
     required: true,
   },
-  userIP: String,
   status: String,
   amount: Number,
   invoice_id: String,
   paidOn: Date,
-  paymentGatewayFees: String,
   type: String,
   company: String,
-  cardNumber: String,
 });
 
 const ConsultationRequest = mongoose.model(

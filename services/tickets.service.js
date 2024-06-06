@@ -38,7 +38,7 @@ exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
         isActive: true,
       };
     }
-    if(req.query.field==="selectAll"){
+    if (req.query.field === "selectAll") {
       filterObject = {
         isActive: true,
       };
@@ -127,6 +127,24 @@ exports.getConsultRequestById = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.getLoggedMentorRequests = asyncHandler(async (req, res, next) => {
+  const request = await ConsultationRequest.find({
+    mentor: req.user.id,
+  }).populate({
+    path: "user ticket",
+    select:
+      "title name phone email price phone day owner price birthdate owner",
+  });
+  if (!request) {
+    return next(
+      new ApiError(
+        `The consultaion requests for this mentor ${req.user.id} were not found`
+      )
+    );
+  }
+  res.status(200).json({ length: request.length, data: request });
+});
+
 exports.deleteConsultRequestById = factory.deleteOne(ConsultationRequest);
 
 exports.consultaionPaymentSession = async (req, res, next) => {
@@ -199,13 +217,9 @@ exports.consultationCheckout = async (req, res) => {
         user: req.user,
         ticket: response.data.metadata.ticket,
         mentor: mentor,
-        userIP: response.data.payments ? response.data.payments[0].ip : null,
         status: response.data.status,
         amount: response.data.amount / 100,
         invoice_id: req.params.id,
-        paymentGatewayFees: response.data.payments
-          ? response.data.payments[0].fee_format
-          : null,
         type:
           (response.data.payments &&
             response.data.payments[0].source &&
@@ -215,11 +229,6 @@ exports.consultationCheckout = async (req, res) => {
           (response.data.payments &&
             response.data.payments[0].source &&
             response.data.payments[0].source.company) ||
-          null,
-        cardNumber:
-          (response.data.payments &&
-            response.data.payments[0].source &&
-            response.data.payments[0].source.number) ||
           null,
         paidOn: Date.now(),
       });
