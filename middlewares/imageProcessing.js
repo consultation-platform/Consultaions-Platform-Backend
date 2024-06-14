@@ -31,6 +31,5 @@ async function uploadToS3(buffer, fileName, folder) {
     ContentType: "image/jpeg",
   };
 
-  // Use S3 client to send the upload request
   await s3Client.send(new PutObjectCommand(params));
 }
