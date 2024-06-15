@@ -6,14 +6,12 @@ exports.subscribed = (Model) =>
     const userId = req.user.id;
     const documentId = req.params.id;
     try {
-      // Assuming your model has a field named "userId" to match with the user ID
       const paidUsersDocument = await Model.findOne({ _id: documentId }).select(
         "paidUsers"
       );
       if (req.user.role !== "user") {
         return next();
       }
-      // Check if paidUsers is an array and if the current user is in it
       if (
         paidUsersDocument &&
         paidUsersDocument.paidUsers &&
@@ -28,7 +26,6 @@ exports.subscribed = (Model) =>
     } catch (error) {
       console.error("Error checking subscription status:", error);
 
-      // Handle potential errors (e.g., database query failure)
       return next(new ApiError(`Error checking subscription status.`, 500));
     }
   });

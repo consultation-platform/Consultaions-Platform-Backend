@@ -47,7 +47,10 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
-    consultaions: [{ type: mongoose.Schema.Types.ObjectId, ref: "ConsultationTicket" }],
+    consultaions: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "ConsultationTicket" },
+    ],
+    books: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
 
     address: {
       type: String,

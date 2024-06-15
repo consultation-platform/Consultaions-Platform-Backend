@@ -12,11 +12,17 @@ const {
   uploadVideoImage,
 } = require("../services/video.service");
 const { allowedTo, protect } = require("../services/auth.service");
-const { checkOwner } = require("../middlewares/check.owner");
+const { checCoursekOwner } = require("../middlewares/check.course-owner");
 
 router.use(protect);
 // Route to create a new Video
-router.post("/", checkOwner, uploadVideoImage, saveSingleImage, createVideo);
+router.post(
+  "/",
+  checCoursekOwner,
+  uploadVideoImage,
+  saveSingleImage,
+  createVideo
+);
 
 // Route to get a Video by ID
 router.get("/:id", getVideoById);
