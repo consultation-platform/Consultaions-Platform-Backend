@@ -146,6 +146,26 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
     await user.save();
     // 3) generate token
     token = createToken(user._id);
+
+    const message = "مرحبا بك في موقع سايس الابتكار!
+
+نحن متحمسون لتقديم خدماتنا التي تهدف إلى مساعدتك في تطوير وتحسين مهاراتك ومعارفك. من خلال توفير تقييمات دقيقة وجلسات توجيه فردية، نسعى إلى مساعدتك على تحقيق أهدافك الشخصية والمهنية.
+
+كمستخدم جديد، نود أن نرحب بك ونشجعك على الاستكشاف الكامل لما يمكن أن يوفره لك هذا الموقع. سنعمل معك عن كثب لفهم احتياجاتك الفريدة وتقديم حلول مصممة خصيصًا لك.
+
+لا تتردد في طرح أي أسئلة أو استفسارات. فريقنا المتخصص سيكون متحمسًا للإجابة عليها والمساعدة في تحقيق أهدافك. نتطلع إلى التعاون معك في رحلتك نحو النمو والنجاح!"
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "مرحبا بك في سايس للإبتكار",
+        message,
+        user: user.name,
+        code: null,
+      });
+    } catch (err) {
+      console.error(err);
+      return next(new ApiError("Error sending verification code", 500));
+    }
   }
 
   // Save the token in the cookies
