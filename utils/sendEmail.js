@@ -1,7 +1,7 @@
 const Sib = require("sib-api-v3-sdk");
 require("dotenv").config();
 
-const sendEmail = async (options) => {
+const sendWelcomeEmail = async (options) => {
   const client = Sib.ApiClient.instance;
   const apiKey = client.authentications["api-key"];
   apiKey.apiKey = process.env.API_KEY;
@@ -77,7 +77,7 @@ const sendEmail = async (options) => {
               </div>
               <div class="content">
                   <h3>Dear {{params.user}},</h3>
-                  <p>Your Your code is:</p>
+                  <p>Your code is:</p>
                   <p class="verification-code"><strong>{{params.code}}</strong></p>
                   <p class="note">{{params.message}}.</p>
                   <p >Thank you.</p>
@@ -94,4 +94,4 @@ const sendEmail = async (options) => {
     .catch(console.log);
 };
 
-module.exports = sendEmail;
+module.exports = sendWelcomeEmail;

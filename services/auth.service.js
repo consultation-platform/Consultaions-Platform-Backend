@@ -10,6 +10,7 @@ const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 const Mentor = require("../models/mentor.model");
 const { uploadSingleImage } = require("../middlewares/uploadImages");
+const sendWelcomeEmail = require("../utils/sendEmail");
 
 exports.uploadProfileImage = uploadSingleImage("image");
 
@@ -158,16 +159,15 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 لا تتردد في طرح أي أسئلة أو استفسارات. فريقنا المتخصص سيكون متحمسًا للإجابة عليها والمساعدة في تحقيق أهدافك. نتطلع إلى التعاون معك في رحلتك نحو النمو والنجاح!
     `;
     try {
-      await sendEmail({
+      await sendWelcomeEmail({
         email: user.email,
         subject: "مرحبا بك في سايس للإبتكار",
         message,
         user: user.name,
-        code: null,
       });
     } catch (err) {
       console.error(err);
-      return next(new ApiError("Error sending verification code", 500));
+      return next(new ApiError("Error sending welcome email", 500));
     }
   }
 
