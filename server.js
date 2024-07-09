@@ -26,6 +26,7 @@ const coverRoutes = require("./routes/cover.routes.js");
 const toolsRoutes = require("./routes/tools.routes.js");
 const aboutUsRoutes = require("./routes/about-us.routes.js");
 const bookRoutes = require("./routes/book.routes.js");
+const servicesRoutes = require("./routes/services.routes.js");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -72,6 +73,7 @@ app.use("/api/cover", coverRoutes);
 app.use("/api/tools", toolsRoutes);
 app.use("/api/about-us", aboutUsRoutes);
 app.use("/api/books", bookRoutes);
+app.use("/api/books", servicesRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
