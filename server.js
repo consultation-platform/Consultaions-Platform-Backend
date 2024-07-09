@@ -73,7 +73,7 @@ app.use("/api/cover", coverRoutes);
 app.use("/api/tools", toolsRoutes);
 app.use("/api/about-us", aboutUsRoutes);
 app.use("/api/books", bookRoutes);
-app.use("/api/books", servicesRoutes);
+app.use("/api/services", servicesRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));

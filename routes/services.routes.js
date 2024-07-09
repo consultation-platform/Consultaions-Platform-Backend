@@ -12,12 +12,12 @@ const {
 
 router.get("/", getAllService);
 
-router.post("/", protect, allowedTo("manager", "admin"), createService);
+router.post("/", createService);
 
-router.put("/:id", protect, allowedTo("manager", "admin"), updateService);
+router.put("/:id", updateService);
 
 router.get("/:id", getServiceById);
 
-router.delete("/:id", protect, allowedTo("manager", "admin"), deleteService);
+router.delete("/:id", deleteService);
 
 module.exports = router;
