@@ -10,7 +10,12 @@ const createToken = require("../utils/create.token");
 const User = require("../models/user.model");
 const Mentor = require("../models/mentor.model");
 const { uploadSingleImage } = require("../middlewares/uploadImages");
-const sendWelcomeEmail = require("../utils/sendEmail");
+const sendWelcomeEmail = require("../utils/sendWelcomeEmail");
+const {
+  getSemesterNumber,
+  getWeekNumber,
+  getDayNumber,
+} = require("../utils/define.user.semester");
 
 exports.uploadProfileImage = uploadSingleImage("image");
 
@@ -164,6 +169,9 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
         subject: "مرحبا بك في سايس للإبتكار",
         message,
         user: user.name,
+        semester: `فصلك هو : ${getSemesterNumber(user.birthdate)}`,
+        week: `اسبوعك هو : ${getWeekNumber(user.birthdate)}`,
+        day: `يومك هو : ${getDayNumber(user.birthdate)}`,
       });
     } catch (err) {
       console.error(err);
