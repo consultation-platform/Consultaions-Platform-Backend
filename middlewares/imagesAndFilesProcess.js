@@ -32,7 +32,7 @@ async function uploadToS3(buffer, fileName, folder, contentType) {
 
 exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
   try {
-    const hostname = `https://sayes-media.s3.eu-north-1.amazonaws.com`;
+    const hostname = ``;
 
     //Image(1) processing
     if (req.files.image && req.files.image.length > 0) {
