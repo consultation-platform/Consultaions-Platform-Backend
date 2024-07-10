@@ -47,6 +47,20 @@ exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
 
       req.body.image = imageFileName;
     }
+    // Thumbnail processing
+    if (req.files.thumbnail && req.files.thumbnail.length > 0) {
+      const thumbnailFileName = `${Date.now()}-${slugify(
+        req.files.thumbnail[0].originalname
+      )}`;
+      await uploadToS3(
+        req.files.thumbnail[0].buffer,
+        thumbnailFileName,
+        "images",
+        "image/jpeg"
+      );
+
+      req.body.thumbnail = thumbnailFileName;
+    }
 
     // Process video
     if (req.files.video && req.files.video.length > 0) {
