@@ -19,7 +19,9 @@ exports.getCoverById = factory.getOne(Cover);
 exports.updateCover = factory.updateOne(Cover);
 
 exports.getAllCovers = asyncHandler(async (req, res, next) => {
-  const document = await Cover.find().select("title image description  name");
+  const document = await Cover.find().select(
+    "title image video description  name"
+  );
   if (!document) next(new ApiError(`Error Happend `, 404));
   if (document.length === 0) {
     res.status(200).json({ message: "There Is NO Data To Retrive" });
