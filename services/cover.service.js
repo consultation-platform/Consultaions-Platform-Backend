@@ -8,6 +8,7 @@ const { uploadMixOfImages } = require("../middlewares/uploadImages");
 exports.uploadCoverImage = uploadMixOfImages([
   { name: "image", maxCount: 1 },
   { name: "video", maxCount: 1 },
+  { name: "thumbnail", maxCount: 1 },
 ]);
 
 exports.createCover = factory.createOne(Cover);
@@ -20,7 +21,7 @@ exports.updateCover = factory.updateOne(Cover);
 
 exports.getAllCovers = asyncHandler(async (req, res, next) => {
   const document = await Cover.find().select(
-    "title image video description  name"
+    "title image video description  name thumbnail"
   );
   if (!document) next(new ApiError(`Error Happend `, 404));
   if (document.length === 0) {

@@ -18,13 +18,17 @@ const s3Client = new S3Client({
   },
   region: process.env.AWS_REGION,
 });
-async function uploadToS3(buffer, fileName, folder, contentType) {
+async function uploadToS3(
+  buffer,
+  fileName,
+  folder: multerS3.AUTO_CONTENT_TYPE
+) {
   const params = {
     Bucket: process.env.AWS_BUCKET,
     Key: `${folder}/${fileName}`,
     Body: buffer,
     ACL: "public-read",
-    ContentType: contentType,
+    ContentType: multerS3.AUTO_CONTENT_TYPE,
   };
 
   await s3Client.send(new PutObjectCommand(params));
