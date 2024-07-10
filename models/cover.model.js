@@ -18,6 +18,10 @@ const coverSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    video: {
+      type: String,
+      default: " ",
+    },
   },
   { timestamps: true }
 );

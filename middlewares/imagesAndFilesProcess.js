@@ -50,6 +50,20 @@ exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
       req.body.image = `${hostname}/images/${imageFileName}`;
     }
 
+    // Process video
+    if (req.files.video && req.files.video.length > 0) {
+      const videoFileName = `${Date.now()}-${slugify(
+        req.files.video[0].originalname
+      )}`;
+      await uploadToS3(
+        req.files.video[0].buffer,
+        videoFileName,
+        "videos",
+        "video/mp4"
+      );
+      req.body.video = `${hostname}/videos/${videoFileName}`;
+    }
+
     // Process other files
     if (req.files.pdf && req.files.pdf.length > 0) {
       const fileFileName = `${Date.now()}-${slugify(

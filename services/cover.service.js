@@ -3,9 +3,12 @@ const Cover = require("../models/cover.model");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
 
-const { uploadSingleImage } = require("../middlewares/uploadImages");
+const { uploadMixOfImages } = require("../middlewares/uploadImages");
 
-exports.uploadCoverImage = uploadSingleImage("image");
+exports.uploadCoverImage = uploadMixOfImages([
+  { name: "image", maxCount: 1 },
+  { name: "video", maxCount: 1 },
+]);
 
 exports.createCover = factory.createOne(Cover);
 
