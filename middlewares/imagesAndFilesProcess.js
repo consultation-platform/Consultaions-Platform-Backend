@@ -32,8 +32,6 @@ async function uploadToS3(buffer, fileName, folder, contentType) {
 
 exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
   try {
-    const hostname = ``;
-
     //Image(1) processing
     if (req.files.image && req.files.image.length > 0) {
       const imageFileName = `${Date.now()}-${slugify(
@@ -47,7 +45,7 @@ exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
         "image/jpeg"
       );
 
-      req.body.image = `${hostname}/images/${imageFileName}`;
+      req.body.image = imageFileName;
     }
 
     // Process video
@@ -61,7 +59,7 @@ exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
         "videos",
         "video/mp4"
       );
-      req.body.video = `${hostname}/videos/${videoFileName}`;
+      req.body.video = videoFileName;
     }
 
     // Process other files
@@ -75,7 +73,7 @@ exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
         "files",
         "application/pdf"
       );
-      req.body.pdf = `${hostname}/files/${fileFileName}`;
+      req.body.pdf = fileFileName;
     }
 
     next();
