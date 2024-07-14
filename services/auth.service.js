@@ -181,11 +181,11 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 
   // Save the token in the cookies
   res.cookie("jwt", token, {
-    httpOnly: true,
+    httpOnly: process.env.NODE_ENV !== "production",
     path: "/",
-    maxAge: 240 * 60 * 60 * 1000,
-    sameSite: "None",
-    secure: (process.env.NODE_ENV = "production"),
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
   });
 
   res.status(200).json({
@@ -317,11 +317,11 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 9) Save the token in the cookies
     res.cookie("jwt", token, {
-      httpOnly: true,
+      httpOnly: process.env.NODE_ENV !== "production",
       path: "/",
-      maxAge: 240 * 60 * 60 * 1000,
-      sameSite: "None",
-      secure: (process.env.NODE_ENV = "production"),
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
     });
 
     // 10) Extract specific properties from the user object
@@ -547,10 +547,10 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
 
   // Save the token in the cookies
   res.cookie("jwt", token, {
-    httpOnly: true,
+    httpOnly: process.env.NODE_ENV !== "production",
     path: "/",
-    maxAge: 240 * 60 * 60 * 1000,
-    sameSite: "None",
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
   });
 
@@ -622,10 +622,11 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
 exports.logout = asyncHandler(async (req, res, next) => {
   res.clearCookie("jwt", {
+    httpOnly: process.env.NODE_ENV !== "production",
     path: "/",
-    sameSite: "None",
-    httpOnly: true,
-    secure: (process.env.NODE_ENV = "production"),
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
   });
   res.status(200).json({ Message: "Logged out success" });
 });
