@@ -19,7 +19,7 @@ exports.createOne = (Model) =>
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     try {
-      const filter = { _id: req.params.id }; // Modify this filter based on your requirements
+      const filter = { _id: req.params.id }; 
       const document = await Model.findOneAndDelete(filter);
       if (!document)
         return next(
@@ -69,7 +69,7 @@ exports.getOne = (Model) =>
 exports.getAll = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.find().select(
-      "title image description price body answer link"
+      "title image description price body answer promo link"
     );
     if (!document) next(new ApiError(`Error Happend `, 404));
     if (document.length === 0) {
