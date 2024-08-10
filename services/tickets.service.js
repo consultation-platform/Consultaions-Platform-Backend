@@ -43,7 +43,10 @@ exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
         isActive: true,
       };
     }
-    const tickets = await ConsultationTicket.find(filterObject);
+    const tickets = await ConsultationTicket.find(filterObject).populate({
+      path: "owner",
+      select: "name",
+    });
 
     // Return tickets
     res.status(200).json({ length: tickets.length, data: tickets });
