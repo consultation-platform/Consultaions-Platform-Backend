@@ -4,6 +4,12 @@ const Payments = require("../models/payment.records");
 const ApiError = require("../utils/api.error");
 const { generatePaymentSession, paymentCheckout } = require("../utils/payment");
 const { getOne, updateOne } = require("./handlers.factory");
+const { uploadMixOfImages } = require("../middlewares/uploadImages");
+
+exports.uploadCoachMedia = uploadMixOfImages([
+  { name: "image", maxCount: 1 },
+  { name: "video", maxCount: 1 },
+ ]);
 
 exports.getProgramInfo = getOne(CoachProgram)
 

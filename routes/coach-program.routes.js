@@ -6,14 +6,14 @@ const {
   coachProgramcheckoutPayment,
   getProgramInfo,
   updateProgramInfo,
+  uploadCoachMedia,
 } = require("../services/coachProgram.service");
-
-
 
 router.get("/:id",getProgramInfo);
 
 router.put("/:id",
   //  protect, allowedTo("manager", "admin"),
+  uploadCoachMedia,
     updateProgramInfo);
 
 router.post("/payment/:id", protect, coachProgramPaymentSession);

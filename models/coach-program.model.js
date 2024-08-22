@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const CoachProgramSchema = new Schema({
   paidUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  image:String,
+  video:String,
   price: { type: Number, required: true },
   gloalHeader: { type: String },
   goalDescription: { type: String },
