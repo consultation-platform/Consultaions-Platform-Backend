@@ -8,13 +8,17 @@ const {
   updateProgramInfo,
   uploadCoachMedia,
 } = require("../services/coachProgram.service");
+const { saveFilesNameToDB } = require("../middlewares/imagesAndFilesProcess");
 
-router.get("/:id",getProgramInfo);
+router.get("/:id", getProgramInfo);
 
-router.put("/:id",
+router.put(
+  "/:id",
   //  protect, allowedTo("manager", "admin"),
   uploadCoachMedia,
-    updateProgramInfo);
+  saveFilesNameToDB,
+  updateProgramInfo
+);
 
 router.post("/payment/:id", protect, coachProgramPaymentSession);
 
