@@ -3,6 +3,11 @@ const CoachProgram = require("../models/coach-program.model");
 const Payments = require("../models/payment.records");
 const ApiError = require("../utils/api.error");
 const { generatePaymentSession, paymentCheckout } = require("../utils/payment");
+const { getOne, updateOne } = require("./handlers.factory");
+
+exports.getProgramInfo = getOne(CoachProgram)
+
+exports.updateProgramInfo = updateOne(CoachProgram)
 
 exports.coachProgramPaymentSession = async (req, res, next) => {
   try {
@@ -27,7 +32,7 @@ exports.coachProgramPaymentSession = async (req, res, next) => {
       return next(new ApiError("You already own this program", 401));
     }
     const data = {
-      success_url: process.env.success_course_url,
+      success_url: process.env.success_coachProgram_url,
       back_url: process.env.fail_payment_url,
       amount: coachProgram.price * 100,
       currency: "SAR",
