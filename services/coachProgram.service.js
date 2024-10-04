@@ -24,25 +24,12 @@ exports.coachProgramPaymentSession = async (req, res, next) => {
       );
     }
 
-    const paidUsersCoatchProgram = await CoachProgram.findById(
-      req.params.id,
-      "paidUsers"
-    );
-    if (
-      paidUsersCoatchProgram &&
-      paidUsersCoatchProgram.paidUsers &&
-      paidUsersCoatchProgram.paidUsers
-        .map((user) => user.toString())
-        .includes(req.user.id)
-    ) {
-      return next(new ApiError("You already own this program", 401));
-    }
     const data = {
       success_url: process.env.success_coachProgram_url,
       back_url: process.env.fail_payment_url,
       amount: coachProgram.price * 100,
       currency: "SAR",
-      description: `coachProgram Payment from ${req.user.name}`,
+      description: `coachProgram Payment`,
       metadata: {
         coachProgram: req.params.id,
       },
@@ -76,17 +63,9 @@ exports.coachProgramcheckoutPayment = async (req, res, next) => {
         refId: response.data.id,
       });
       await paymentid.save();
-      await CoachProgram.findByIdAndUpdate(
-        response.data.metadata.coachProgram,
-        {
-          $push: { paidUsers: req.user.id },
-        },
-        { new: true }
-      );
-      await req.user.save();
+    
 
       const coachProgramRequest = new CoachProgramRequest({
-        user: req.user,
         course: response.data.metadata.coachProgram,
         userIP: response.data.payments ? response.data.payments[0].ip : null,
         status: response.data.status,

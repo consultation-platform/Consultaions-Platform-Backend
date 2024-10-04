@@ -12,7 +12,7 @@ const { saveFilesNameToDB } = require("../middlewares/imagesAndFilesProcess");
 
 router.get("/:id", getProgramInfo);
 
-router.put(
+router.patch(
   "/:id",
   //  protect, allowedTo("manager", "admin"),
   uploadCoachMedia,
@@ -20,8 +20,8 @@ router.put(
   updateProgramInfo
 );
 
-router.post("/payment/:id", protect, coachProgramPaymentSession);
+router.post("/payment/:id", coachProgramPaymentSession);
 
-router.post("/checkout/:id", protect, coachProgramcheckoutPayment);
+router.post("/checkout/:id", coachProgramcheckoutPayment);
 
 module.exports = router;
