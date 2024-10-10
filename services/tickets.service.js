@@ -25,6 +25,8 @@ exports.createTicket = asyncHandler(async (req, res) => {
 
 exports.deleteTicket = factory.deleteOne(ConsultationTicket);
 
+exports.updateTicket = factory.updateOne(ConsultationTicket);
+
 exports.getTicketById = factory.getOne(ConsultationTicket);
 
 exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {

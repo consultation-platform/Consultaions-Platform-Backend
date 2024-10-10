@@ -14,6 +14,7 @@ const {
   getAllConsultRequests,
   deleteConsultRequestById,
   getLoggedMentorRequests,
+  updateTicket,
 } = require("../services/tickets.service");
 
 // const {
@@ -44,11 +45,7 @@ router.get("/request/my-requests", protect, getLoggedMentorRequests);
 
 router.get("/request", getAllConsultRequests);
 
-router.delete(
-  "/request/:id",
-  protect,
-  deleteConsultRequestById
-);
+router.delete("/request/:id", protect, deleteConsultRequestById);
 
 router.get("/request/:id", protect, getConsultRequestById);
 
@@ -56,6 +53,14 @@ router.get("/request/:id", protect, deleteConsultRequestById);
 
 // Get ticket by id
 router.get("/:id", getTicketById);
+
+router.put(
+  "/:id",
+  protect,
+  allowedTo("mentor", "manager"),
+  checkTicketOwner,
+  updateTicket
+);
 
 // Delete ticket
 router.delete(
