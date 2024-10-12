@@ -42,20 +42,20 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // CORS
-app.use(
-  cors({
-    credentials: true,
-    origin: [
-      "http://localhost:5173",
-      "https://sayeesu.onrender.com",
-      "https://booking21102001.netlify.app",
-      "https://consultation-s2p9.onrender.com",
-      "https://www.sayeesu.com",
-      "https://sayeesu.com",
-      "*",
-    ],
-  })
-);
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: [
+//       "http://localhost:5173",
+//       "https://sayeesu.onrender.com",
+//       "https://booking21102001.netlify.app",
+//       "https://consultation-s2p9.onrender.com",
+//       "https://www.sayeesu.com",
+//       "https://sayeesu.com",
+//       "*",
+//     ],
+//   })
+// );
 
 //Mount Routes
 app.use("/api/auth", authRoutes);
