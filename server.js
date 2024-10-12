@@ -58,24 +58,24 @@ if (process.env.NODE_ENV === "development") {
 // );
 
 //Mount Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/cons-fields", consFieldsRoutes);
-app.use("/api/contact", contactUsRoutes);
-app.use("/api/mentors", mentorsRoutes);
-app.use("/api/honor-board", honorBoardRoutes);
-app.use("/api/courses", coursesRoutes);
-app.use("/api/videos", videosRoutes);
-app.use("/api/questions", questionRoutes);
-app.use("/api/cons-tickets", consTicketRoutes);
-app.use("/api/comments", commentRoutes);
-app.use("/api/replies", repliesRoutes);
-app.use("/api/cover", coverRoutes);
-app.use("/api/tools", toolsRoutes);
-app.use("/api/about-us", aboutUsRoutes);
-app.use("/api/books", bookRoutes);
-app.use("/api/services", servicesRoutes);
-app.use("/api/coach-program", coachProgramRoutes);
+// app.use("/api/auth", authRoutes);
+// app.use("/api/users", userRoutes);
+// app.use("/api/cons-fields", consFieldsRoutes);
+// app.use("/api/contact", contactUsRoutes);
+// app.use("/api/mentors", mentorsRoutes);
+// app.use("/api/honor-board", honorBoardRoutes);
+// app.use("/api/courses", coursesRoutes);
+// app.use("/api/videos", videosRoutes);
+// app.use("/api/questions", questionRoutes);
+// app.use("/api/cons-tickets", consTicketRoutes);
+// app.use("/api/comments", commentRoutes);
+// app.use("/api/replies", repliesRoutes);
+// app.use("/api/cover", coverRoutes);
+// app.use("/api/tools", toolsRoutes);
+// app.use("/api/about-us", aboutUsRoutes);
+// app.use("/api/books", bookRoutes);
+// app.use("/api/services", servicesRoutes);
+// app.use("/api/coach-program", coachProgramRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
