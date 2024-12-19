@@ -63,7 +63,6 @@ exports.checksubscribed = subscribed(Book);
 
 exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  console.log(req.params);
   const book = await Book.findById(id);
   if (!book) {
     return next(new ApiError(`The book with ID ${id} was not found`, 404));

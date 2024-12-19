@@ -26,6 +26,7 @@ exports.acceptmentor = asyncHandler(async (req, res, next) => {
   if (!mentor) {
     return next(new ApiError(`No mentor found for ID ${req.params.id}`, 404));
   }
+
   res.status(200).json({ data: mentor });
 });
 
@@ -82,7 +83,7 @@ exports.getMentorsByField = async (req, res, next) => {
     const mentors = await Mentor.find(filterObject).select(
       "name phone email field image"
     );
-    
+
     res.status(200).json({ mentors });
   } catch (error) {
     console.error("Error retrieving mentors by field:", error);

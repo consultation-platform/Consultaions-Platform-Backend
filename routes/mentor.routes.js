@@ -41,25 +41,25 @@ router.post("/deposite-request", protect, allowedTo("mentor"), depositeRequest);
 router.post(
   "/accept-deposite/:id",
   protect,
-  allowedTo("manager"),
+  allowedTo("manager", "admin"),
   acceptDepositRequest
 );
 router.get(
   "/deposite-request/:id",
   protect,
-  allowedTo("manager"),
+  allowedTo("manager", "admin"),
   getDeposteRequestByID
 );
 router.get(
   "/accepted-deposites",
   protect,
-  allowedTo("manager"),
+  allowedTo("manager", "admin"),
   getAcceptedDepostes
 );
 router.get(
   "/pending-deposites",
   protect,
-  allowedTo("manager"),
+  allowedTo("manager", "admin"),
   getNotAcceptedDepostes
 );
 ///////////
